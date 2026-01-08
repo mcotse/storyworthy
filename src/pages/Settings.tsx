@@ -9,6 +9,22 @@ import {
 } from '../services/notifications';
 import styles from './Settings.module.css';
 
+// Store the install prompt globally so it persists across renders
+let deferredPrompt: BeforeInstallPromptEvent | null = null;
+
+interface BeforeInstallPromptEvent extends Event {
+  prompt: () => Promise<void>;
+  userChoice: Promise<{ outcome: 'accepted' | 'dismissed' }>;
+}
+
+// Listen for the beforeinstallprompt event
+if (typeof window !== 'undefined') {
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e as BeforeInstallPromptEvent;
+  });
+}
+
 export function Settings() {
   const [storageUsed, setStorageUsed] = useState(0);
   const [storageQuota, setStorageQuota] = useState(50 * 1024 * 1024);
@@ -17,6 +33,8 @@ export function Settings() {
   const [deleteConfirm, setDeleteConfirm] = useState('');
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [notificationStatus, setNotificationStatus] = useState<NotificationPermission | 'unsupported'>('default');
+  const [canInstall, setCanInstall] = useState(false);
+  const [isInstalled, setIsInstalled] = useState(false);
 
   const notificationSettings = useStore((state) => state.notificationSettings);
   const setNotificationSettings = useStore((state) => state.setNotificationSettings);
@@ -32,6 +50,20 @@ export function Settings() {
     loadStorage();
 
     setNotificationStatus(getNotificationPermission());
+
+    // Check if already installed
+    const isStandalone = window.matchMedia('(display-mode: standalone)').matches
+      || (window.navigator as Navigator & { standalone?: boolean }).standalone === true;
+    setIsInstalled(isStandalone);
+
+    // Check if install prompt is available
+    setCanInstall(!!deferredPrompt);
+
+    // Listen for future install prompts
+    const handleBeforeInstall = () => setCanInstall(true);
+    window.addEventListener('beforeinstallprompt', handleBeforeInstall);
+
+    return () => window.removeEventListener('beforeinstallprompt', handleBeforeInstall);
   }, []);
 
   const formatBytes = (bytes: number) => {
@@ -128,6 +160,26 @@ export function Settings() {
   };
 
   const storagePercentage = (storageUsed / storageQuota) * 100;
+
+  const handleInstall = async () => {
+    if (!deferredPrompt) {
+      addToast('Install not available. Try using Safari share menu.', 'info');
+      return;
+    }
+
+    try {
+      await deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
+      if (outcome === 'accepted') {
+        addToast('App installed!', 'success');
+        setIsInstalled(true);
+      }
+      deferredPrompt = null;
+      setCanInstall(false);
+    } catch (error) {
+      addToast('Installation failed', 'error');
+    }
+  };
 
   return (
     <div className={styles.container}>
@@ -248,6 +300,32 @@ export function Settings() {
               Delete All Entries
             </button>
           </div>
+        </section>
+
+        {/* Install App Section */}
+        <section className={styles.section}>
+          <h2 className={styles.sectionTitle}>Install App</h2>
+          {isInstalled ? (
+            <p className={styles.installedText}>App is installed on your device</p>
+          ) : (
+            <>
+              <p className={styles.installDesc}>
+                Install Daily Moments on your home screen for quick access and offline use.
+              </p>
+              {canInstall ? (
+                <button className="btn-primary" onClick={handleInstall} style={{ width: '100%' }}>
+                  Add to Home Screen
+                </button>
+              ) : (
+                <div className={styles.installInstructions}>
+                  <p><strong>On iPhone/iPad:</strong></p>
+                  <p>Tap the Share button, then "Add to Home Screen"</p>
+                  <p style={{ marginTop: '12px' }}><strong>On Android:</strong></p>
+                  <p>Tap the menu (3 dots), then "Add to Home Screen"</p>
+                </div>
+              )}
+            </>
+          )}
         </section>
 
         {/* About Section */}
