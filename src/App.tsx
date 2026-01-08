@@ -3,6 +3,7 @@ import { useStore } from './store';
 import { Navigation } from './components/Navigation';
 import { Toast } from './components/Toast';
 import { Onboarding } from './components/Onboarding';
+import { UpdatePrompt } from './components/UpdatePrompt';
 import { Home } from './pages/Home';
 import { Calendar } from './pages/Calendar';
 import { Analytics } from './pages/Analytics';
@@ -91,6 +92,7 @@ function App() {
       </main>
       <Navigation />
       <Toast />
+      <UpdatePrompt />
     </>
   );
 }
