@@ -102,7 +102,15 @@ function main() {
   // Sort by date
   entries.sort((a, b) => a.date.localeCompare(b.date));
 
-  const output = { entries, version: 1 };
+  const output = {
+    metadata: {
+      version: '1.0',
+      exportDate: new Date().toISOString(),
+      entryCount: entries.length,
+      appName: 'Daily Moments',
+    },
+    entries,
+  };
   writeFileSync(outputFile, JSON.stringify(output, null, 2));
 
   console.log(`\nConverted ${entries.length} entries`);
