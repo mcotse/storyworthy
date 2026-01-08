@@ -201,6 +201,8 @@ src/components/SearchBar.module.css
 src/components/SearchBar.tsx
 src/components/Toast.module.css
 src/components/Toast.tsx
+src/components/UpdatePrompt.module.css
+src/components/UpdatePrompt.tsx
 src/index.css
 src/main.tsx
 src/pages/Analytics.module.css
