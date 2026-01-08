@@ -33,16 +33,19 @@ A minimal, distraction-free PWA for capturing storyworthy moments and gratitude 
 
 ```bash
 # Install dependencies
-npm install
+bun install
 
 # Start dev server
-npm run dev
+bun run dev
 
 # Build for production
-npm run build
+bun run build
 
 # Preview production build
-npm run preview
+bun run preview
+
+# Run tests
+bun run test:run
 ```
 
 ## License

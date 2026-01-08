@@ -126,9 +126,11 @@ import type { Entry } from '../types/entry';
 ## Commands
 
 ```bash
-npm run dev      # Start dev server (http://localhost:5173)
-npm run build    # Production build
-npm run preview  # Preview production build
+bun install      # Install dependencies
+bun run dev      # Start dev server (http://localhost:5173)
+bun run build    # Production build
+bun run preview  # Preview production build
+bun run test:run # Run unit tests
 ```
 
 ## Deployment

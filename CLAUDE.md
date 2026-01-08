@@ -5,19 +5,19 @@ This file provides context for Claude Code when working on the Daily Moments pro
 ## Quick Start
 
 ```bash
-npm install        # Install deps + git hooks
-npm run dev        # Start dev server (http://localhost:5174/storyworthy/)
-npm run test:run   # Run unit tests
-npm run build      # Type check + production build
+bun install        # Install deps + git hooks
+bun run dev        # Start dev server (http://localhost:5174/storyworthy/)
+bun run test:run   # Run unit tests
+bun run build      # Type check + production build
 ```
 
 ## Testing
 
 ### Unit Tests (Vitest)
 ```bash
-npm run test       # Watch mode
-npm run test:run   # Single run
-npm run test:coverage
+bun run test       # Watch mode
+bun run test:run   # Single run
+bun run test:coverage
 ```
 
 Test files:
@@ -35,7 +35,7 @@ Test utilities are set up in `src/test/setup.ts` with mocks for:
 ### Browser Tests (dev-browser)
 ```bash
 # Requires dev-browser server running
-npm run test:browser
+bun run test:browser
 ```
 
 Browser tests are in `browser-tests/run-tests.ts` and test:
