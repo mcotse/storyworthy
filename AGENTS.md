@@ -142,6 +142,14 @@ npm run preview  # Preview production build
 - Commit changes directly without asking for permission
 - Push when asked or when a feature is complete
 
+## Versioning
+
+Version in `package.json` is auto-exposed via `__APP_VERSION__` global.
+
+- **Patch** (1.0.x): Bug fixes, small tweaks
+- **Minor** (1.x.0): New features
+- **Major** (x.0.0): Breaking changes
+
 ## Common Tasks
 
 ### Adding a new page

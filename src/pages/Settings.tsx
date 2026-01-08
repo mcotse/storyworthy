@@ -333,7 +333,7 @@ export function Settings() {
           <h2 className={styles.sectionTitle}>About</h2>
           <div className={styles.aboutInfo}>
             <p><strong>Daily Moments</strong></p>
-            <p className={styles.version}>Version 1.0.0</p>
+            <p className={styles.version}>Version {__APP_VERSION__}</p>
             <p className={styles.description}>
               A minimal, distraction-free journaling app for capturing storyworthy moments and gratitude.
             </p>

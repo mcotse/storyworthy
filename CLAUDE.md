@@ -158,6 +158,17 @@ describe('NewComponent', () => {
 - Push when asked or when a feature is complete
 - Use descriptive commit messages with bullet points for multiple changes
 
+## Versioning
+
+Version is defined in `package.json` and automatically exposed to the app via `__APP_VERSION__`.
+
+**When to bump versions:**
+- **Patch** (1.0.x): Bug fixes, small UI tweaks, dependency updates
+- **Minor** (1.x.0): New features, new pages, new export formats
+- **Major** (x.0.0): Breaking changes, major redesigns, data migrations
+
+Bump version in `package.json` when making significant changes. The Settings page displays the version automatically.
+
 ## Don't Do
 
 - Don't add backend dependencies (app is offline-first)
