@@ -35,8 +35,9 @@
 }
 
 .date {
+  font-family: var(--font-serif);
   font-size: 0.9375rem;
-  font-weight: 600;
+  font-weight: 500;
   color: var(--color-text);
   display: flex;
   align-items: center;
@@ -77,7 +78,7 @@
 
 .previewText {
   flex: 1;
-  font-family: var(--font-serif);
+  font-family: var(--font-sans);
   font-size: 0.9375rem;
   color: var(--color-text-light);
   line-height: 1.5;
@@ -106,12 +107,12 @@
 
 .sectionLabel {
   display: block;
-  font-size: 0.8125rem;
-  font-weight: 500;
+  font-family: var(--font-serif);
+  font-size: 0.875rem;
+  font-weight: 400;
+  font-style: italic;
   color: var(--color-primary-dark);
   margin-bottom: var(--spacing-xs);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
 }
 
 .text {

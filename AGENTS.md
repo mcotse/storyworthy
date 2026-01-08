@@ -82,8 +82,9 @@ interface Entry {
 - Text: `#3A3A3A` (warm dark gray)
 
 ### Typography
-- UI: System sans-serif
-- Entry content: Georgia (serif)
+- Body: DM Sans (Google Font)
+- Headings: DM Serif Display (used sparingly, h1 only)
+- Entry content: DM Serif Display
 
 ### CSS Variables
 All design tokens are in `src/index.css` as CSS custom properties:
