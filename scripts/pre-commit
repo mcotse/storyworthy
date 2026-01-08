@@ -1,0 +1,25 @@
+#!/bin/sh
+# Lightweight pre-commit hook for Daily Moments app
+# Runs TypeScript check and unit tests
+
+echo "Running pre-commit checks..."
+
+# Run TypeScript type check
+echo "Checking types..."
+if ! npm run build 2>&1 | grep -q "error"; then
+  :
+else
+  npm run build 2>&1 | grep -A2 "error"
+  echo "Type check failed. Please fix errors before committing."
+  exit 1
+fi
+
+# Run unit tests
+echo "Running unit tests..."
+npm run test:run 2>&1
+if [ $? -ne 0 ]; then
+  echo "Tests failed. Please fix failing tests before committing."
+  exit 1
+fi
+
+echo "Pre-commit checks passed!"
