@@ -9,6 +9,9 @@ on:
       - 'vite.config.ts'
       - 'tsconfig.json'
 
+permissions:
+  contents: write
+
 jobs:
   update-agents:
     runs-on: ubuntu-latest
