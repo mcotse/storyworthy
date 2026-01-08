@@ -1,0 +1,134 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+  padding-bottom: 80px;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--spacing-lg);
+  background-color: var(--color-card);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.title {
+  font-size: 1.375rem;
+  font-weight: 700;
+}
+
+.editBtn {
+  padding: var(--spacing-sm);
+  color: var(--color-text-muted);
+}
+
+.editBtn:hover {
+  color: var(--color-primary-dark);
+}
+
+.main {
+  flex: 1;
+  padding: var(--spacing-lg);
+  transition: opacity var(--transition-normal);
+}
+
+.fadeOut {
+  opacity: 0;
+}
+
+.fadeIn {
+  opacity: 1;
+}
+
+.card {
+  background-color: var(--color-card);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  padding: var(--spacing-xl);
+}
+
+.date {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--color-primary-dark);
+  margin-bottom: var(--spacing-lg);
+}
+
+.section {
+  margin-bottom: var(--spacing-lg);
+}
+
+.sectionLabel {
+  display: block;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--color-primary-dark);
+  margin-bottom: var(--spacing-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.text {
+  color: var(--color-text);
+  white-space: pre-wrap;
+  margin: 0;
+}
+
+.photoContainer {
+  margin: var(--spacing-lg) 0;
+}
+
+.photo {
+  width: 100%;
+  max-height: 400px;
+  object-fit: cover;
+  border-radius: var(--radius-md);
+  cursor: zoom-in;
+}
+
+.edited {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+  margin-top: var(--spacing-md);
+}
+
+.footer {
+  padding: var(--spacing-lg);
+  display: flex;
+  justify-content: center;
+}
+
+.footer button {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  min-width: 150px;
+  justify-content: center;
+}
+
+/* Empty State */
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: var(--spacing-xxl) var(--spacing-lg);
+  min-height: 400px;
+}
+
+.emptyIcon {
+  color: var(--color-primary);
+  margin-bottom: var(--spacing-lg);
+}
+
+.empty h2 {
+  font-size: 1.25rem;
+  margin-bottom: var(--spacing-sm);
+}
+
+.empty p {
+  color: var(--color-text-muted);
+}

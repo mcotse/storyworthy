@@ -1,0 +1,237 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+  padding-bottom: 80px;
+}
+
+.header {
+  padding: var(--spacing-lg);
+  background-color: var(--color-card);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.title {
+  font-size: 1.375rem;
+  font-weight: 700;
+}
+
+.main {
+  padding: var(--spacing-lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+}
+
+.section {
+  background-color: var(--color-card);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-lg);
+  box-shadow: var(--shadow-sm);
+}
+
+.sectionTitle {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: var(--spacing-lg);
+  color: var(--color-text);
+}
+
+/* Settings rows */
+.settingRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-md) 0;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.settingRow:last-child {
+  border-bottom: none;
+}
+
+.settingInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.settingLabel {
+  font-weight: 500;
+}
+
+.settingDesc {
+  font-size: 0.8125rem;
+  color: var(--color-text-muted);
+}
+
+.settingControls {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+}
+
+.timeInput {
+  width: 100px;
+  padding: var(--spacing-sm);
+  font-size: 0.875rem;
+}
+
+/* Toggle switch */
+.toggle {
+  position: relative;
+  display: inline-block;
+  width: 48px;
+  height: 28px;
+}
+
+.toggle input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  inset: 0;
+  background-color: var(--color-border);
+  transition: var(--transition-fast);
+  border-radius: var(--radius-full);
+}
+
+.slider::before {
+  position: absolute;
+  content: '';
+  height: 22px;
+  width: 22px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  transition: var(--transition-fast);
+  border-radius: 50%;
+  box-shadow: var(--shadow-sm);
+}
+
+.toggle input:checked + .slider {
+  background-color: var(--color-primary-dark);
+}
+
+.toggle input:checked + .slider::before {
+  transform: translateX(20px);
+}
+
+/* Storage */
+.storageInfo {
+  margin-bottom: var(--spacing-lg);
+}
+
+.storageHeader {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.875rem;
+  margin-bottom: var(--spacing-sm);
+}
+
+.storageBar {
+  height: 8px;
+  background-color: var(--color-background);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+}
+
+.storageProgress {
+  height: 100%;
+  background-color: var(--color-primary);
+  border-radius: var(--radius-full);
+  transition: width var(--transition-slow);
+}
+
+/* Buttons */
+.buttonGroup {
+  margin-bottom: var(--spacing-md);
+}
+
+.buttonGroup:last-child {
+  margin-bottom: 0;
+}
+
+.buttonGroup button,
+.buttonGroup label {
+  width: 100%;
+  display: block;
+  text-align: center;
+}
+
+.note {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+  margin-top: var(--spacing-xs);
+  text-align: center;
+}
+
+.warning {
+  color: var(--color-warning);
+  font-size: 0.875rem;
+  text-align: center;
+  padding: var(--spacing-md);
+}
+
+/* About */
+.aboutInfo {
+  text-align: center;
+}
+
+.version {
+  color: var(--color-text-muted);
+  font-size: 0.875rem;
+  margin: var(--spacing-xs) 0 var(--spacing-md);
+}
+
+.description {
+  color: var(--color-text-light);
+  font-size: 0.875rem;
+}
+
+/* Modal */
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-lg);
+  z-index: var(--z-modal);
+}
+
+.modal {
+  background-color: var(--color-card);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-xl);
+  max-width: 400px;
+  width: 100%;
+}
+
+.modal h3 {
+  margin-bottom: var(--spacing-md);
+}
+
+.modal p {
+  color: var(--color-text-light);
+  font-size: 0.9375rem;
+  margin-bottom: var(--spacing-md);
+}
+
+.confirmInput {
+  margin-bottom: var(--spacing-lg);
+}
+
+.modalButtons {
+  display: flex;
+  gap: var(--spacing-md);
+}
+
+.modalButtons button {
+  flex: 1;
+}
