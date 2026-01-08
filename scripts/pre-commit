@@ -2,6 +2,9 @@
 # Lightweight pre-commit hook for Daily Moments app
 # Runs TypeScript check and unit tests
 
+# Add bun to PATH if not present
+export PATH="$HOME/.bun/bin:$PATH"
+
 echo "Running pre-commit checks..."
 
 # Run TypeScript type check

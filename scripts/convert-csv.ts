@@ -10,8 +10,8 @@ interface Entry {
   date: string;
   storyworthy: string;
   thankful: string;
-  createdAt: string;
-  updatedAt: string;
+  createdAt: number;
+  modifiedAt?: number;
 }
 
 function parseDate(dateStr: string): string | null {
@@ -88,14 +88,13 @@ function main() {
       continue;
     }
 
-    const now = new Date().toISOString();
+    const now = Date.now();
 
     entries.push({
       date,
       storyworthy: moment.trim(),
       thankful: thankful.trim(),
       createdAt: now,
-      updatedAt: now,
     });
   }
 
