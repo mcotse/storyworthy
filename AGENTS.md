@@ -163,15 +163,19 @@ npm run preview  # Preview production build
 
 <!-- BEGIN_FILE_TREE -->
 ```
+.claude/settings.local.json
 .github/workflows/deploy.yml
-.gitignore
+.github/workflows/update-agents.yml
 AGENTS.md
+CLAUDE.md
 README.md
 SPEC.md
+browser-tests/run-tests.ts
 index.html
 package.json
 src/App.tsx
 src/components/EntryCard.module.css
+src/components/EntryCard.test.tsx
 src/components/EntryCard.tsx
 src/components/EntryForm.module.css
 src/components/EntryForm.tsx
@@ -202,11 +206,18 @@ src/pages/Settings.tsx
 src/services/compression.ts
 src/services/db.ts
 src/services/notifications.ts
+src/store/index.test.ts
 src/store/index.ts
+src/test/setup.ts
 src/types/entry.ts
+src/utils/date.test.ts
 src/utils/date.ts
+src/utils/export.test.ts
 src/utils/export.ts
+tsconfig.app.json
 tsconfig.json
+tsconfig.node.json
 vite.config.ts
+vitest.config.ts
 ```
 <!-- END_FILE_TREE -->
