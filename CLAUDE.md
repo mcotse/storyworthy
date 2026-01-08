@@ -152,6 +152,12 @@ describe('NewComponent', () => {
 - **Dev server**: Vite on port 5173 (or next available)
 - **Build output**: `dist/`
 
+## Git Workflow
+
+- Commit changes directly without asking for permission
+- Push when asked or when a feature is complete
+- Use descriptive commit messages with bullet points for multiple changes
+
 ## Don't Do
 
 - Don't add backend dependencies (app is offline-first)
