@@ -222,6 +222,7 @@ src/utils/date.test.ts
 src/utils/date.ts
 src/utils/export.test.ts
 src/utils/export.ts
+src/vite-env.d.ts
 tsconfig.app.json
 tsconfig.json
 tsconfig.node.json
