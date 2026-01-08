@@ -17,14 +17,15 @@ export default defineConfig({
         name: 'Daily Moments',
         short_name: 'Moments',
         description: 'Capture your storyworthy moments and gratitude daily',
-        start_url: '/',
+        start_url: '/storyworthy/',
+        scope: '/storyworthy/',
         display: 'standalone',
         theme_color: '#D4A59A',
         background_color: '#FAF8F5',
         orientation: 'portrait',
         icons: [
           {
-            src: '/icons/icon.svg',
+            src: '/storyworthy/icons/icon.svg',
             sizes: 'any',
             type: 'image/svg+xml',
             purpose: 'any maskable'
