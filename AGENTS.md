@@ -183,6 +183,7 @@ SPEC.md
 browser-tests/run-tests.ts
 index.html
 package.json
+scripts/convert-csv.ts
 src/App.tsx
 src/components/EntryCard.module.css
 src/components/EntryCard.test.tsx
