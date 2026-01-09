@@ -1,6 +1,6 @@
 #!/bin/sh
 # Pre-commit hook for Storyworthy app
-# Bumps patch version, runs TypeScript check and unit tests
+# Auto-bumps patch version, runs TypeScript check and unit tests
 
 # Add bun to PATH if not present
 export PATH="$HOME/.bun/bin:$PATH"
