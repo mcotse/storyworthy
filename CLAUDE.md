@@ -162,12 +162,13 @@ describe('NewComponent', () => {
 
 Version is defined in `package.json` and automatically exposed to the app via `__APP_VERSION__`.
 
-**When to bump versions:**
-- **Patch** (1.0.x): Bug fixes, small UI tweaks, dependency updates
-- **Minor** (1.x.0): New features, new pages, new export formats
-- **Major** (x.0.0): Breaking changes, major redesigns, data migrations
+**Automatic patch bumping:** The pre-commit hook automatically increments the patch version on every commit.
 
-Bump version in `package.json` when making significant changes. The Settings page displays the version automatically.
+**Manual version bumps:**
+- **Minor** (1.x.0): New features, new pages, new export formats - manually update package.json
+- **Major** (x.0.0): Breaking changes, major redesigns, data migrations - manually update package.json
+
+The Settings page displays the version automatically.
 
 ## Don't Do
 
