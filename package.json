@@ -1,7 +1,7 @@
 {
   "name": "storyworthy",
   "private": true,
-  "version": "1.2.1",
+  "version": "1.2.2",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -15,6 +15,7 @@
     "prepare": "./scripts/install-hooks.sh"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.90.1",
     "@tanstack/react-virtual": "^3.13.18",
     "browser-image-compression": "^2.0.2",
     "date-fns": "^4.1.0",

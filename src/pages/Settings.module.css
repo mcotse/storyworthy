@@ -260,3 +260,84 @@
 .modalButtons button {
   flex: 1;
 }
+
+/* Cloud Sync */
+.userInfo {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  padding: var(--spacing-md);
+  background-color: var(--color-background);
+  border-radius: var(--radius-md);
+  margin-bottom: var(--spacing-md);
+}
+
+.userAvatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: var(--color-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.userAvatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.userAvatar span {
+  color: white;
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.userDetails {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.userName {
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.userEmail {
+  font-size: 0.8125rem;
+  color: var(--color-text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.syncInfo {
+  margin-bottom: var(--spacing-md);
+}
+
+.syncStatus {
+  font-size: 0.875rem;
+  color: var(--color-text-light);
+  text-align: center;
+}
+
+.syncStatus .offline {
+  color: var(--color-warning);
+}
+
+.syncStatus .syncing {
+  color: var(--color-primary-dark);
+}
+
+.syncDesc {
+  color: var(--color-text-light);
+  font-size: 0.9375rem;
+  margin-bottom: var(--spacing-lg);
+  text-align: center;
+}

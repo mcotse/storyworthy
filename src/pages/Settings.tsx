@@ -7,6 +7,8 @@ import {
   getNotificationPermission,
   scheduleNotifications,
 } from '../services/notifications';
+import { isSupabaseConfigured } from '../services/supabase';
+import { formatDistanceToNow } from 'date-fns';
 import styles from './Settings.module.css';
 
 // Store the install prompt globally so it persists across renders
@@ -40,6 +42,16 @@ export function Settings() {
   const setNotificationSettings = useStore((state) => state.setNotificationSettings);
   const addToast = useStore((state) => state.addToast);
   const loadEntries = useStore((state) => state.loadEntries);
+
+  // Auth & Sync
+  const user = useStore((state) => state.user);
+  const authLoading = useStore((state) => state.authLoading);
+  const isSyncing = useStore((state) => state.isSyncing);
+  const lastSyncTime = useStore((state) => state.lastSyncTime);
+  const isOnline = useStore((state) => state.isOnline);
+  const signInWithGoogle = useStore((state) => state.signInWithGoogle);
+  const signOut = useStore((state) => state.signOut);
+  const triggerSync = useStore((state) => state.triggerSync);
 
   useEffect(() => {
     const loadStorage = async () => {
@@ -250,6 +262,79 @@ export function Settings() {
             </>
           )}
         </section>
+
+        {/* Cloud Sync Section */}
+        {isSupabaseConfigured() && (
+          <section className={styles.section}>
+            <h2 className={styles.sectionTitle}>Cloud Sync</h2>
+
+            {authLoading ? (
+              <p className={styles.syncStatus}>Loading...</p>
+            ) : user ? (
+              <>
+                <div className={styles.userInfo}>
+                  <div className={styles.userAvatar}>
+                    {user.user_metadata?.avatar_url ? (
+                      <img src={user.user_metadata.avatar_url} alt="" />
+                    ) : (
+                      <span>{user.email?.[0].toUpperCase()}</span>
+                    )}
+                  </div>
+                  <div className={styles.userDetails}>
+                    <span className={styles.userName}>
+                      {user.user_metadata?.full_name || user.email}
+                    </span>
+                    <span className={styles.userEmail}>{user.email}</span>
+                  </div>
+                </div>
+
+                <div className={styles.syncInfo}>
+                  <div className={styles.syncStatus}>
+                    {!isOnline ? (
+                      <span className={styles.offline}>Offline</span>
+                    ) : isSyncing ? (
+                      <span className={styles.syncing}>Syncing...</span>
+                    ) : lastSyncTime ? (
+                      <span>Last synced {formatDistanceToNow(lastSyncTime, { addSuffix: true })}</span>
+                    ) : (
+                      <span>Not synced yet</span>
+                    )}
+                  </div>
+
+                  <button
+                    className="btn-secondary"
+                    onClick={() => triggerSync()}
+                    disabled={isSyncing || !isOnline}
+                    style={{ width: '100%', marginTop: 'var(--spacing-md)' }}
+                  >
+                    {isSyncing ? 'Syncing...' : 'Sync Now'}
+                  </button>
+                </div>
+
+                <button
+                  className="btn-secondary"
+                  onClick={() => signOut()}
+                  style={{ width: '100%', marginTop: 'var(--spacing-md)' }}
+                >
+                  Sign Out
+                </button>
+              </>
+            ) : (
+              <>
+                <p className={styles.syncDesc}>
+                  Sign in to sync your entries across devices.
+                </p>
+                <button
+                  className="btn-primary"
+                  onClick={() => signInWithGoogle()}
+                  style={{ width: '100%' }}
+                >
+                  Sign in with Google
+                </button>
+              </>
+            )}
+          </section>
+        )}
 
         {/* Data Management Section */}
         <section className={styles.section}>

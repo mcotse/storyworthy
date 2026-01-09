@@ -20,11 +20,14 @@ function App() {
   const onboardingComplete = useStore((state) => state.onboardingComplete);
   const notificationSettings = useStore((state) => state.notificationSettings);
   const loadEntries = useStore((state) => state.loadEntries);
+  const initAuth = useStore((state) => state.initAuth);
+  const setOnline = useStore((state) => state.setOnline);
 
   useEffect(() => {
     const init = async () => {
       await initDB();
       await loadEntries();
+      await initAuth();
       setIsReady(true);
 
       if (!onboardingComplete) {
@@ -41,6 +44,18 @@ function App() {
     };
 
     init();
+
+    // Listen for online/offline events
+    const handleOnline = () => setOnline(true);
+    const handleOffline = () => setOnline(false);
+
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
   }, []);
 
   if (!isReady) {

@@ -1,7 +1,11 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import type { User } from '@supabase/supabase-js';
 import type { Entry, NotificationSettings } from '../types/entry';
 import * as db from '../services/db';
+import * as sync from '../services/sync';
+import * as auth from '../services/auth';
+import { isSupabaseConfigured } from '../services/supabase';
 
 interface Toast {
   id: string;
@@ -34,6 +38,13 @@ interface AppState {
   onboardingComplete: boolean;
   installPromptDismissedAt: number | null;
 
+  // Auth & Sync
+  user: User | null;
+  authLoading: boolean;
+  isSyncing: boolean;
+  lastSyncTime: number | null;
+  isOnline: boolean;
+
   // Actions
   loadEntries: () => Promise<void>;
   addEntry: (entry: Entry) => Promise<void>;
@@ -50,6 +61,15 @@ interface AppState {
   setNotificationSettings: (settings: NotificationSettings) => void;
   setOnboardingComplete: (complete: boolean) => void;
   setInstallPromptDismissed: () => void;
+
+  // Auth actions
+  initAuth: () => Promise<void>;
+  signInWithGoogle: () => Promise<void>;
+  signOut: () => Promise<void>;
+
+  // Sync actions
+  triggerSync: () => Promise<void>;
+  setOnline: (online: boolean) => void;
 }
 
 export const useStore = create<AppState>()(
@@ -74,6 +94,13 @@ export const useStore = create<AppState>()(
       onboardingComplete: false,
       installPromptDismissedAt: null,
 
+      // Auth & Sync initial state
+      user: null,
+      authLoading: true,
+      isSyncing: false,
+      lastSyncTime: sync.getLastSyncTime(),
+      isOnline: navigator.onLine,
+
       // Actions
       loadEntries: async () => {
         set({ isLoading: true, error: null });
@@ -87,10 +114,21 @@ export const useStore = create<AppState>()(
 
       addEntry: async (entry: Entry) => {
         try {
-          await db.createEntry(entry);
+          // Mark as pending sync if user is authenticated
+          const { user } = get();
+          const entryWithSync = user
+            ? { ...entry, pendingSync: true }
+            : entry;
+
+          await db.createEntry(entryWithSync);
           const entries = await db.getAllEntries();
           set({ entries });
           get().addToast('Entry saved!', 'success');
+
+          // Trigger sync if online and authenticated
+          if (user) {
+            get().triggerSync();
+          }
         } catch (error) {
           get().addToast('Failed to save entry', 'error');
           throw error;
@@ -99,10 +137,21 @@ export const useStore = create<AppState>()(
 
       updateEntry: async (date: string, updates: Partial<Entry>) => {
         try {
-          await db.updateEntry(date, updates);
+          // Mark as pending sync if user is authenticated
+          const { user } = get();
+          const updatesWithSync = user
+            ? { ...updates, pendingSync: true }
+            : updates;
+
+          await db.updateEntry(date, updatesWithSync);
           const entries = await db.getAllEntries();
           set({ entries });
           get().addToast('Entry updated!', 'success');
+
+          // Trigger sync if online and authenticated
+          if (user) {
+            get().triggerSync();
+          }
         } catch (error) {
           get().addToast('Failed to update entry', 'error');
           throw error;
@@ -197,6 +246,90 @@ export const useStore = create<AppState>()(
 
       setInstallPromptDismissed: () => {
         set({ installPromptDismissedAt: Date.now() });
+      },
+
+      // Auth actions
+      initAuth: async () => {
+        if (!isSupabaseConfigured()) {
+          set({ authLoading: false });
+          return;
+        }
+
+        set({ authLoading: true });
+
+        // Get current user
+        const user = await auth.getCurrentUser();
+        set({ user, authLoading: false });
+
+        // Listen for auth changes
+        auth.onAuthStateChange((user) => {
+          set({ user });
+          // Trigger sync when user signs in
+          if (user) {
+            get().triggerSync();
+          }
+        });
+      },
+
+      signInWithGoogle: async () => {
+        const { error } = await auth.signInWithGoogle();
+        if (error) {
+          get().addToast('Sign in failed: ' + error.message, 'error');
+        }
+      },
+
+      signOut: async () => {
+        const { error } = await auth.signOut();
+        if (error) {
+          get().addToast('Sign out failed', 'error');
+        } else {
+          set({ user: null });
+          sync.clearSyncData();
+          get().addToast('Signed out', 'success');
+        }
+      },
+
+      // Sync actions
+      triggerSync: async () => {
+        const { user, isSyncing, isOnline } = get();
+
+        if (!user || isSyncing || !isOnline || !isSupabaseConfigured()) {
+          return;
+        }
+
+        set({ isSyncing: true });
+
+        try {
+          const result = await sync.syncAll();
+          set({ lastSyncTime: Date.now() });
+
+          // Reload entries after sync
+          const entries = await db.getAllEntries();
+          set({ entries });
+
+          if (result.pushed > 0 || result.pulled > 0) {
+            get().addToast(
+              `Synced: ${result.pushed} up, ${result.pulled} down`,
+              'success'
+            );
+          }
+
+          if (result.errors > 0) {
+            get().addToast(`${result.errors} entries failed to sync`, 'error');
+          }
+        } catch (error) {
+          get().addToast('Sync failed', 'error');
+        } finally {
+          set({ isSyncing: false });
+        }
+      },
+
+      setOnline: (online: boolean) => {
+        set({ isOnline: online });
+        // Auto-sync when coming back online
+        if (online && get().user) {
+          get().triggerSync();
+        }
       },
     }),
     {
