@@ -216,9 +216,12 @@ src/pages/Random.module.css
 src/pages/Random.tsx
 src/pages/Settings.module.css
 src/pages/Settings.tsx
+src/services/auth.ts
 src/services/compression.ts
 src/services/db.ts
 src/services/notifications.ts
+src/services/supabase.ts
+src/services/sync.ts
 src/store/index.test.ts
 src/store/index.ts
 src/test/setup.ts
