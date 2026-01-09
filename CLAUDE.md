@@ -1,6 +1,6 @@
 # CLAUDE.md - Claude Code Guide
 
-This file provides context for Claude Code when working on the Daily Moments project.
+This file provides context for Claude Code when working on the Storyworthy project.
 
 ## Quick Start
 

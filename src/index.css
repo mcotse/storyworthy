@@ -13,8 +13,8 @@
   --color-warning: #D4A54A;
 
   /* Typography */
-  --font-serif: 'Fraunces', Georgia, serif;
-  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-serif: 'Lora', Georgia, serif;
+  --font-sans: 'Lora', Georgia, serif;
 
   /* Spacing */
   --spacing-xs: 4px;

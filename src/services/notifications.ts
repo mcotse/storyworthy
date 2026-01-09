@@ -57,7 +57,7 @@ export function scheduleNotifications(
   if (morningEnabled) {
     morningTimeout = scheduleNotificationAt(
       morningTime,
-      'Daily Moments',
+      'Storyworthy',
       'Take a moment to reflect on today'
     );
   }
@@ -65,7 +65,7 @@ export function scheduleNotifications(
   if (eveningEnabled) {
     eveningTimeout = scheduleNotificationAt(
       eveningTime,
-      'Daily Moments',
+      'Storyworthy',
       'How was your day?'
     );
   }

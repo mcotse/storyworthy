@@ -1,4 +1,4 @@
-// Browser tests for Daily Moments app using dev-browser skill
+// Browser tests for Storyworthy app using dev-browser skill
 // Run with: npm run test:browser (requires dev-browser server and dev server running)
 
 import { connect, waitForPageLoad } from "@/client.js";
@@ -34,7 +34,7 @@ async function screenshot(page: Page, name: string): Promise<void> {
 }
 
 async function main() {
-  console.log("\n=== Daily Moments Browser Tests ===\n");
+  console.log("\n=== Storyworthy Browser Tests ===\n");
   console.log(`Testing: ${APP_URL}\n`);
 
   const client = await connect();
@@ -46,7 +46,7 @@ async function main() {
 
   // Test 1: Onboarding appears on first load
   await runTest("Onboarding screen displays on first load", async () => {
-    await page.waitForSelector('text="Welcome to Daily Moments"', { timeout: 5000 });
+    await page.waitForSelector('text="Welcome to Storyworthy"', { timeout: 5000 });
     const skipButton = await page.$('text="Skip"');
     const nextButton = await page.$('text="Next"');
     if (!skipButton || !nextButton) {
@@ -80,7 +80,7 @@ async function main() {
 
   // Test 3: Home page loads after onboarding
   await runTest("Home page displays after onboarding", async () => {
-    await page.waitForSelector('text="Daily Moments"', { timeout: 5000 });
+    await page.waitForSelector('text="Storyworthy"', { timeout: 5000 });
     await screenshot(page, "04-home");
   });
 
@@ -225,7 +225,7 @@ async function main() {
   await runTest("Saved entry appears in home list", async () => {
     await page.waitForTimeout(300);
     const pageText = await page.textContent('body');
-    if (!pageText?.includes("browser tests") && !pageText?.includes("Daily Moments")) {
+    if (!pageText?.includes("browser tests") && !pageText?.includes("Storyworthy")) {
       // Entry might be collapsed, that's okay
       console.log("  (Entry may be collapsed in card view)");
     }

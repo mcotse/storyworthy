@@ -10,7 +10,7 @@ export async function exportData(): Promise<void> {
       version: '1.0',
       exportDate: new Date().toISOString(),
       entryCount: entries.length,
-      appName: 'Daily Moments',
+      appName: 'Storyworthy',
     },
     entries: entries.map(({ photo, thumbnail, ...rest }) => rest),
   };
@@ -22,7 +22,7 @@ export async function exportData(): Promise<void> {
   const url = URL.createObjectURL(blob);
   const link = document.createElement('a');
   link.href = url;
-  link.download = `daily-moments-export-${format(new Date(), 'yyyy-MM-dd')}.json`;
+  link.download = `storyworthy-export-${format(new Date(), 'yyyy-MM-dd')}.json`;
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
@@ -43,7 +43,7 @@ export async function importData(file: File): Promise<number> {
           throw new Error('Invalid file format');
         }
 
-        if (data.metadata.appName !== 'Daily Moments') {
+        if (data.metadata.appName !== 'Storyworthy' && data.metadata.appName !== 'Daily Moments') {
           throw new Error('Invalid app export file');
         }
 
@@ -86,7 +86,7 @@ export function validateExportFile(content: string): { valid: boolean; error?: s
       return { valid: false, error: 'Missing metadata field' };
     }
 
-    if (data.metadata.appName !== 'Daily Moments') {
+    if (data.metadata.appName !== 'Storyworthy' && data.metadata.appName !== 'Daily Moments') {
       return { valid: false, error: 'Invalid app export file' };
     }
 

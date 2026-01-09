@@ -4,7 +4,7 @@ import styles from './Onboarding.module.css';
 
 const steps = [
   {
-    title: 'Welcome to Daily Moments',
+    title: 'Welcome to Storyworthy',
     body: 'Capture your storyworthy moments and gratitude daily',
     icon: (
       <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">

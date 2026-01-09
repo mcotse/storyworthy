@@ -1,4 +1,4 @@
-# Daily Moments
+# Storyworthy
 
 A minimal, distraction-free PWA for capturing storyworthy moments and gratitude daily.
 

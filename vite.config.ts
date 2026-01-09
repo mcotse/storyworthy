@@ -14,8 +14,8 @@ export default defineConfig({
       registerType: 'prompt',
       includeAssets: ['icons/*.svg'],
       manifest: {
-        name: 'Daily Moments',
-        short_name: 'Moments',
+        name: 'Storyworthy',
+        short_name: 'Storyworthy',
         description: 'Capture your storyworthy moments and gratitude daily',
         start_url: '/storyworthy/',
         scope: '/storyworthy/',

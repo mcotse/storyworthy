@@ -9,7 +9,7 @@ describe('export utilities', () => {
           version: '1.0',
           exportDate: '2024-01-15T00:00:00.000Z',
           entryCount: 5,
-          appName: 'Daily Moments',
+          appName: 'Storyworthy',
         },
         entries: [
           { date: '2024-01-15', storyworthy: 'Test', thankful: 'Test', createdAt: 123 },
@@ -42,7 +42,7 @@ describe('export utilities', () => {
     it('returns invalid for non-array entries', () => {
       const content = JSON.stringify({
         metadata: {
-          appName: 'Daily Moments',
+          appName: 'Storyworthy',
         },
         entries: 'not an array',
       })

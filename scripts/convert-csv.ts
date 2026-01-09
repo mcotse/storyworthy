@@ -1,5 +1,5 @@
 /**
- * Convert Storyworthy CSV to Daily Moments import format
+ * Convert Storyworthy CSV to Storyworthy app import format
  *
  * Usage: bun run scripts/convert-csv.ts <input.csv...> [-o output.json]
  *
@@ -178,7 +178,7 @@ function main() {
       version: '1.0',
       exportDate: new Date().toISOString(),
       entryCount: entries.length,
-      appName: 'Daily Moments',
+      appName: 'Storyworthy',
     },
     entries,
   };

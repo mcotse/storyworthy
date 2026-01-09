@@ -1,11 +1,11 @@
 # AGENTS.md - AI Assistant Guide
 
-> This file helps AI coding assistants understand the Daily Moments project.
+> This file helps AI coding assistants understand the Storyworthy project.
 > Last updated: Auto-generated on each push
 
 ## Project Overview
 
-**Daily Moments** is a Progressive Web App (PWA) for daily journaling. Users capture "storyworthy moments" and gratitude entries, with optional photo attachments.
+**Storyworthy** is a Progressive Web App (PWA) for daily journaling. Users capture "storyworthy moments" and gratitude entries, with optional photo attachments.
 
 - **Live URL:** https://mcotse.github.io/storyworthy/
 - **Platform:** PWA optimized for mobile (especially iPhone)

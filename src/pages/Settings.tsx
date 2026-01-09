@@ -310,7 +310,7 @@ export function Settings() {
           ) : (
             <>
               <p className={styles.installDesc}>
-                Install Daily Moments on your home screen for quick access and offline use.
+                Install Storyworthy on your home screen for quick access and offline use.
               </p>
               {canInstall ? (
                 <button className="btn-primary" onClick={handleInstall} style={{ width: '100%' }}>
@@ -332,7 +332,7 @@ export function Settings() {
         <section className={styles.section}>
           <h2 className={styles.sectionTitle}>About</h2>
           <div className={styles.aboutInfo}>
-            <p><strong>Daily Moments</strong></p>
+            <p><strong>Storyworthy</strong></p>
             <p className={styles.version}>Version {__APP_VERSION__}</p>
             <p className={styles.description}>
               A minimal, distraction-free journaling app for capturing storyworthy moments and gratitude.

@@ -13,7 +13,7 @@ export interface ExportData {
     version: "1.0";
     exportDate: string;
     entryCount: number;
-    appName: "Daily Moments";
+    appName: "Storyworthy" | "Daily Moments";
   };
   entries: Omit<Entry, 'photo' | 'thumbnail'>[];
 }
