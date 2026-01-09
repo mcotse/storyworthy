@@ -50,9 +50,10 @@
 }
 
 .date {
+  font-family: var(--font-serif);
   font-size: 0.9375rem;
-  font-weight: 600;
-  color: var(--color-primary-dark);
+  font-weight: 500;
+  color: var(--color-text);
   margin-bottom: var(--spacing-lg);
 }
 
@@ -62,12 +63,12 @@
 
 .sectionLabel {
   display: block;
-  font-size: 0.8125rem;
-  font-weight: 500;
+  font-family: var(--font-serif);
+  font-size: 0.875rem;
+  font-weight: 400;
+  font-style: italic;
   color: var(--color-primary-dark);
   margin-bottom: var(--spacing-xs);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
 }
 
 .text {
