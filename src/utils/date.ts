@@ -107,6 +107,13 @@ export function isTodayDate(dateString: string): boolean {
   return isToday(parseISO(dateString));
 }
 
+export function getAllDatesBetween(startDateString: string, endDateString: string): string[] {
+  const start = parseISO(startDateString);
+  const end = parseISO(endDateString);
+  const days = eachDayOfInterval({ start, end });
+  return days.map((d) => format(d, 'yyyy-MM-dd'));
+}
+
 export function getDayOfWeek(date: Date): number {
   return getDay(date);
 }

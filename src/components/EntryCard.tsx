@@ -94,18 +94,21 @@ export function EntryCard({ entry, isExpanded, onToggle, onEdit, onPhotoClick }:
 interface EmptyCardProps {
   date: string;
   onClick: () => void;
+  isToday?: boolean;
 }
 
-export function EmptyCard({ date, onClick }: EmptyCardProps) {
+export function EmptyCard({ date, onClick, isToday = false }: EmptyCardProps) {
   return (
     <article className={`${styles.card} ${styles.empty}`} onClick={onClick}>
       <header className={styles.header}>
         <h3 className={styles.date}>
           {formatDateString(date)}
-          <span className={styles.badge}>1</span>
+          <span className={styles.badge}>!</span>
         </h3>
       </header>
-      <p className={styles.emptyText}>Tap to create today's entry</p>
+      <p className={styles.emptyText}>
+        {isToday ? "Tap to create today's entry" : 'Tap to fill in this day'}
+      </p>
     </article>
   );
 }

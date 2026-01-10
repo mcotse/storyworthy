@@ -126,12 +126,28 @@ import type { Entry } from '../types/entry';
 ## Commands
 
 ```bash
-bun install      # Install dependencies
-bun run dev      # Start dev server (http://localhost:5173)
-bun run build    # Production build
-bun run preview  # Preview production build
-bun run test:run # Run unit tests
+bun install          # Install dependencies
+bun run dev          # Start dev server (http://localhost:5173)
+bun run build        # Production build
+bun run preview      # Preview production build
+bun run test:run     # Run unit tests
+bun run test:e2e     # Run Playwright e2e tests (headless)
+bun run test:e2e:ui  # Run e2e tests with interactive UI
 ```
+
+## Testing Requirements
+
+**IMPORTANT: Run e2e tests after major changes!**
+
+After implementing any of the following, run `bun run test:e2e` before committing:
+- New features or pages
+- Changes to navigation or routing
+- Modifications to entry creation/editing flow
+- Updates to onboarding
+- Changes to search functionality
+- Any UI changes that affect user workflows
+
+The e2e tests cover: onboarding, navigation, entry CRUD, search, and settings.
 
 ## Deployment
 

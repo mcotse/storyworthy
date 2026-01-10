@@ -32,7 +32,30 @@ Test utilities are set up in `src/test/setup.ts` with mocks for:
 - Notification API
 - navigator.storage
 
-### Browser Tests (dev-browser)
+### E2E Tests (Playwright) - IMPORTANT
+```bash
+bun run test:e2e         # Run all e2e tests (headless)
+bun run test:e2e:ui      # Interactive UI for debugging
+bun run test:e2e:headed  # Watch browser run tests
+```
+
+**Run e2e tests after implementing:**
+- New features or pages
+- Changes to navigation or routing
+- Modifications to entry creation/editing flow
+- Updates to onboarding
+- Changes to search functionality
+- Any UI changes that affect user workflows
+
+E2E tests are in `e2e/` and cover:
+- Onboarding flow (4 tests)
+- Navigation between all pages (7 tests)
+- Entry creation, editing, expansion (6 tests)
+- Search functionality (1 test)
+- Settings page (2 tests)
+- Missing day cards feature (2 tests)
+
+### Browser Tests (dev-browser - legacy)
 ```bash
 # Requires dev-browser server running
 bun run test:browser
