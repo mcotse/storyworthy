@@ -73,10 +73,7 @@ export function Home() {
 
   return (
     <div className={styles.container}>
-      <header className={styles.header}>
-        <h1 className={styles.title}>Storyworthy</h1>
-        <SearchBar />
-      </header>
+      <SearchBar />
 
       <main className={styles.main}>
         {isLoading ? (

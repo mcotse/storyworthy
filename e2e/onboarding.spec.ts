@@ -33,20 +33,21 @@ test.describe('Onboarding Flow', () => {
 
   test('skip button exits onboarding', async ({ page }) => {
     await page.getByRole('button', { name: 'Skip' }).click();
-    await expect(page.getByRole('heading', { name: 'Storyworthy' })).toBeVisible();
+    // Should be on home page with search button visible
+    await expect(page.getByRole('button', { name: 'Search entries' })).toBeVisible();
   });
 
   test('onboarding does not show on subsequent visits', async ({ page }) => {
     // Complete onboarding
     await page.getByRole('button', { name: 'Skip' }).click();
-    await expect(page.getByRole('heading', { name: 'Storyworthy' })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Search entries' })).toBeVisible();
 
     // Reload page
     await page.reload();
     await page.waitForLoadState('networkidle');
 
     // Should still be on home, not onboarding
-    await expect(page.getByRole('heading', { name: 'Storyworthy' })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Search entries' })).toBeVisible();
     await expect(page.getByText('Welcome to Storyworthy')).not.toBeVisible();
   });
 });

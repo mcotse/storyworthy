@@ -39,11 +39,11 @@ export function SearchBar() {
   if (!isOpen) {
     return (
       <button
-        className={styles.searchBtn}
+        className={styles.floatingBtn}
         onClick={() => setIsOpen(true)}
         aria-label="Search entries"
       >
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
           <circle cx="11" cy="11" r="8" />
           <line x1="21" y1="21" x2="16.65" y2="16.65" />
         </svg>
@@ -52,7 +52,7 @@ export function SearchBar() {
   }
 
   return (
-    <div className={styles.container}>
+    <div className={styles.expandedContainer}>
       <div className={styles.inputWrapper}>
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={styles.icon}>
           <circle cx="11" cy="11" r="8" />

@@ -58,7 +58,8 @@ test.describe('Navigation', () => {
 
     // Go back to Home
     await page.getByRole('button', { name: 'Home' }).click();
-    await expect(page.getByRole('heading', { name: 'Storyworthy' })).toBeVisible();
+    // Home page should show search button (no header anymore)
+    await expect(page.getByRole('button', { name: 'Search entries' })).toBeVisible();
   });
 
   test('active tab is highlighted', async ({ page }) => {

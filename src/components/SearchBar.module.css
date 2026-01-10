@@ -1,27 +1,59 @@
-.searchBtn {
-  padding: var(--spacing-sm);
+/* Floating search button */
+.floatingBtn {
+  position: fixed;
+  top: var(--spacing-lg);
+  right: var(--spacing-lg);
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background-color: var(--color-card);
+  box-shadow: var(--shadow-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
   color: var(--color-text);
+  z-index: 100;
+  transition: all var(--transition-normal);
 }
 
-.searchBtn:hover {
+.floatingBtn:hover {
+  box-shadow: var(--shadow-lg);
   color: var(--color-primary-dark);
 }
 
-.container {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-xs);
+.floatingBtn:active {
+  transform: scale(0.95);
+}
+
+/* Expanded search bar */
+.expandedContainer {
+  position: fixed;
+  top: var(--spacing-md);
+  left: var(--spacing-md);
+  right: var(--spacing-md);
+  z-index: 100;
+  animation: slideDown 0.2s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .inputWrapper {
   display: flex;
   align-items: center;
   gap: var(--spacing-sm);
-  background-color: var(--color-background);
+  background-color: var(--color-card);
   border-radius: var(--radius-full);
   padding: var(--spacing-sm) var(--spacing-md);
-  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-lg);
 }
 
 .icon {
@@ -34,7 +66,12 @@
   border: none;
   background: none;
   padding: var(--spacing-xs);
-  font-size: 0.9375rem;
+  font-size: 1rem;
+  color: var(--color-text);
+}
+
+.input::placeholder {
+  color: var(--color-text-muted);
 }
 
 .input:focus {
@@ -44,14 +81,21 @@
 .closeBtn {
   padding: var(--spacing-xs);
   color: var(--color-text-muted);
+  border-radius: 50%;
 }
 
 .closeBtn:hover {
   color: var(--color-text);
+  background-color: var(--color-background);
 }
 
 .results {
   font-size: 0.8125rem;
   color: var(--color-text-muted);
-  padding-left: var(--spacing-md);
+  padding: var(--spacing-xs) var(--spacing-md);
+  background-color: var(--color-card);
+  border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+  margin-top: -var(--spacing-sm);
+  padding-top: var(--spacing-md);
+  box-shadow: var(--shadow-md);
 }

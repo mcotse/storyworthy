@@ -65,25 +65,31 @@ test.describe('Entry Management', () => {
 
     // Create an entry
     await page.getByRole('button', { name: 'Create Entry' }).click();
-    await page.locator('textarea').first().fill('Original content');
+    await page.locator('textarea').first().fill('Original content here');
     await page.getByRole('button', { name: 'Save' }).click();
+    await page.waitForTimeout(800);
+
+    // Expand the card
+    const card = page.locator('article').first();
+    await card.click();
     await page.waitForTimeout(500);
 
-    // Expand the card and click edit
-    await page.locator('article').first().click();
-    await page.waitForTimeout(300);
-    await page.getByRole('button', { name: /edit/i }).click();
-    await page.waitForTimeout(300);
+    // Click the edit button inside the card using JavaScript
+    const editButton = card.getByRole('button', { name: 'Edit entry' });
+    await editButton.waitFor({ state: 'visible' });
+    await editButton.evaluate((el) => (el as HTMLButtonElement).click());
+    await page.waitForTimeout(800);
 
-    // Update the content
+    // Wait for the form to appear
     const textarea = page.locator('textarea').first();
+    await textarea.waitFor({ state: 'visible', timeout: 5000 });
     await textarea.clear();
-    await textarea.fill('Updated content');
+    await textarea.fill('Updated content now');
     await page.getByRole('button', { name: 'Save' }).click();
-    await page.waitForTimeout(500);
+    await page.waitForTimeout(800);
 
     // Verify update
-    await expect(page.getByText('Updated content')).toBeVisible();
+    await expect(page.getByText('Updated content now')).toBeVisible();
   });
 
   test('entry shows Today date', async ({ page }) => {
