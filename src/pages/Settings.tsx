@@ -376,15 +376,20 @@ export function Settings() {
               />
             </label>
           </div>
+        </section>
 
-          <div className={styles.buttonGroup}>
-            <button
-              className="btn-danger"
-              onClick={() => setShowDeleteModal(true)}
-            >
-              Delete All Entries
-            </button>
-          </div>
+        {/* Danger Zone Section */}
+        <section className={`${styles.section} ${styles.dangerSection}`}>
+          <h2 className={styles.sectionTitle}>Danger Zone</h2>
+          <p className={styles.dangerDesc}>
+            This action is permanent and cannot be undone.
+          </p>
+          <button
+            className="btn-danger"
+            onClick={() => setShowDeleteModal(true)}
+          >
+            Delete All Entries
+          </button>
         </section>
 
         {/* Install App Section */}
