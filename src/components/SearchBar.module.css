@@ -57,8 +57,20 @@
 }
 
 .icon {
+  width: 20px;
+  height: 20px;
   color: var(--color-text-muted);
   flex-shrink: 0;
+}
+
+.btnIcon {
+  width: 20px;
+  height: 20px;
+}
+
+.closeIcon {
+  width: 20px;
+  height: 20px;
 }
 
 .input {

@@ -5,6 +5,7 @@ import { PhotoModal } from '../components/PhotoModal';
 import { SearchBar } from '../components/SearchBar';
 import { EntryForm } from '../components/EntryForm';
 import { getTodayDateString, getAllDatesBetween } from '../utils/date';
+import { PencilIcon } from '@heroicons/react/24/outline';
 import styles from './Home.module.css';
 
 export function Home() {
@@ -85,10 +86,7 @@ export function Home() {
         ) : entries.length === 0 ? (
           <div className={styles.empty}>
             <div className={styles.emptyIcon}>
-              <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                <path d="M12 20h9" />
-                <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
-              </svg>
+              <PencilIcon className={styles.emptyIconSvg} />
             </div>
             <h2 className={styles.emptyTitle}>Start your first entry</h2>
             <p className={styles.emptyText}>Begin your journey of capturing daily moments</p>

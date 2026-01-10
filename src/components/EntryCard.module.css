@@ -69,6 +69,11 @@
   background-color: rgba(0, 0, 0, 0.04);
 }
 
+.editIcon {
+  width: 20px;
+  height: 20px;
+}
+
 /* Preview (collapsed) */
 .preview {
   display: flex;

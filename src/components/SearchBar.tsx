@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useStore } from '../store';
+import { MagnifyingGlassIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import styles from './SearchBar.module.css';
 
 export function SearchBar() {
@@ -43,10 +44,7 @@ export function SearchBar() {
         onClick={() => setIsOpen(true)}
         aria-label="Search entries"
       >
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-          <circle cx="11" cy="11" r="8" />
-          <line x1="21" y1="21" x2="16.65" y2="16.65" />
-        </svg>
+        <MagnifyingGlassIcon className={styles.btnIcon} />
       </button>
     );
   }
@@ -54,10 +52,7 @@ export function SearchBar() {
   return (
     <div className={styles.expandedContainer}>
       <div className={styles.inputWrapper}>
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={styles.icon}>
-          <circle cx="11" cy="11" r="8" />
-          <line x1="21" y1="21" x2="16.65" y2="16.65" />
-        </svg>
+        <MagnifyingGlassIcon className={styles.icon} />
         <input
           ref={inputRef}
           type="text"
@@ -67,10 +62,7 @@ export function SearchBar() {
           className={styles.input}
         />
         <button className={styles.closeBtn} onClick={handleClose} aria-label="Close search">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <line x1="18" y1="6" x2="6" y2="18" />
-            <line x1="6" y1="6" x2="18" y2="18" />
-          </svg>
+          <XMarkIcon className={styles.closeIcon} />
         </button>
       </div>
       {searchQuery && (

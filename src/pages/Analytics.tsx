@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import { useStore } from '../store';
 import { calculateStreak, getTimeOfDay } from '../utils/date';
+import { ChartBarIcon } from '@heroicons/react/24/outline';
 import styles from './Analytics.module.css';
 
 export function Analytics() {
@@ -76,11 +77,7 @@ export function Analytics() {
         </header>
         <div className={styles.empty}>
           <div className={styles.emptyIcon}>
-            <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-              <line x1="18" y1="20" x2="18" y2="10" />
-              <line x1="12" y1="20" x2="12" y2="4" />
-              <line x1="6" y1="20" x2="6" y2="14" />
-            </svg>
+            <ChartBarIcon className={styles.emptyIconSvg} />
           </div>
           <h2>Not enough data yet</h2>
           <p>Create at least 3 entries to see insights</p>

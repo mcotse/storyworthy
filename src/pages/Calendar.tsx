@@ -12,6 +12,7 @@ import {
   isTodayDate,
 } from '../utils/date';
 import { format } from 'date-fns';
+import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/outline';
 import styles from './Calendar.module.css';
 
 const WEEKDAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
@@ -78,15 +79,11 @@ export function Calendar() {
 
       <div className={styles.navigation}>
         <button className={styles.navBtn} onClick={handlePrevMonth} aria-label="Previous month">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <polyline points="15,18 9,12 15,6" />
-          </svg>
+          <ChevronLeftIcon className={styles.navIcon} />
         </button>
         <h2 className={styles.monthYear}>{formatMonthYear(year, month)}</h2>
         <button className={styles.navBtn} onClick={handleNextMonth} aria-label="Next month">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <polyline points="9,6 15,12 9,18" />
-          </svg>
+          <ChevronRightIcon className={styles.navIcon} />
         </button>
       </div>
 

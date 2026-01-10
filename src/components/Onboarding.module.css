@@ -34,6 +34,12 @@
   margin-bottom: var(--spacing-xl);
 }
 
+.stepIcon {
+  width: 80px;
+  height: 80px;
+  stroke-width: 1.5;
+}
+
 .title {
   font-size: 1.5rem;
   font-weight: 700;

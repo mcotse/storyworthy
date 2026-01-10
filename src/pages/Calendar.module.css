@@ -34,6 +34,11 @@
   background-color: rgba(0, 0, 0, 0.04);
 }
 
+.navIcon {
+  width: 24px;
+  height: 24px;
+}
+
 .monthYear {
   font-size: 1.125rem;
   font-weight: 600;

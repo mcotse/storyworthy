@@ -35,6 +35,12 @@
   color: var(--color-error);
 }
 
+.backIcon,
+.deleteIcon {
+  width: 24px;
+  height: 24px;
+}
+
 .form {
   padding: var(--spacing-lg);
   display: flex;

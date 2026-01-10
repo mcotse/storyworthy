@@ -162,6 +162,12 @@
   margin-bottom: var(--spacing-lg);
 }
 
+.emptyIconSvg {
+  width: 64px;
+  height: 64px;
+  stroke-width: 1.5;
+}
+
 .empty h2 {
   font-size: 1.25rem;
   margin-bottom: var(--spacing-sm);

@@ -125,6 +125,22 @@
   margin-bottom: var(--spacing-lg);
 }
 
+.emptyIconSvg {
+  width: 64px;
+  height: 64px;
+  stroke-width: 1.5;
+}
+
+.editIcon {
+  width: 20px;
+  height: 20px;
+}
+
+.shuffleIcon {
+  width: 20px;
+  height: 20px;
+}
+
 .empty h2 {
   font-size: 1.25rem;
   margin-bottom: var(--spacing-sm);

@@ -56,6 +56,16 @@
   background-color: #c43a3a;
 }
 
+.removeIcon {
+  width: 20px;
+  height: 20px;
+}
+
+.addIcon {
+  width: 24px;
+  height: 24px;
+}
+
 .error {
   color: var(--color-error);
   font-size: 0.875rem;

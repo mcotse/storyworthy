@@ -4,6 +4,7 @@ import type { Entry } from '../types/entry';
 import { getTodayDateString, formatDateString } from '../utils/date';
 import { saveDraft, getDraft, clearDraft, getEntry } from '../services/db';
 import { PhotoUpload } from './PhotoUpload';
+import { ChevronLeftIcon, TrashIcon } from '@heroicons/react/24/outline';
 import styles from './EntryForm.module.css';
 
 interface EntryFormProps {
@@ -168,19 +169,14 @@ export function EntryForm({ date = getTodayDateString(), onClose, isEdit = false
     <div className={styles.container}>
       <header className={styles.header}>
         <button type="button" className={styles.backBtn} onClick={onClose}>
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <polyline points="15,18 9,12 15,6" />
-          </svg>
+          <ChevronLeftIcon className={styles.backIcon} />
         </button>
         <h1 className={styles.title}>
           {isEdit ? 'Edit Entry' : formatDateString(date)}
         </h1>
         {isEdit && (
           <button type="button" className={styles.deleteBtn} onClick={handleDelete}>
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <polyline points="3,6 5,6 21,6" />
-              <path d="M19,6v14a2,2,0,0,1-2,2H7a2,2,0,0,1-2-2V6M8,6V4a2,2,0,0,1,2-2h4a2,2,0,0,1,2,2V6" />
-            </svg>
+            <TrashIcon className={styles.deleteIcon} />
           </button>
         )}
       </header>

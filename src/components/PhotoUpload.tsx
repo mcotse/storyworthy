@@ -1,5 +1,6 @@
 import { useRef, useState } from 'react';
 import { compressAndCreateThumbnail } from '../services/compression';
+import { XMarkIcon, PhotoIcon } from '@heroicons/react/24/outline';
 import styles from './PhotoUpload.module.css';
 
 interface PhotoUploadProps {
@@ -75,10 +76,7 @@ export function PhotoUpload({ photo, thumbnail, onPhotoChange }: PhotoUploadProp
             onClick={handleRemove}
             aria-label="Remove photo"
           >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <line x1="18" y1="6" x2="6" y2="18" />
-              <line x1="6" y1="6" x2="18" y2="18" />
-            </svg>
+            <XMarkIcon className={styles.removeIcon} />
           </button>
         </div>
       ) : (
@@ -91,11 +89,7 @@ export function PhotoUpload({ photo, thumbnail, onPhotoChange }: PhotoUploadProp
           {isProcessing ? (
             <span className={styles.spinner} />
           ) : (
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
-              <circle cx="8.5" cy="8.5" r="1.5" />
-              <polyline points="21,15 16,10 5,21" />
-            </svg>
+            <PhotoIcon className={styles.addIcon} />
           )}
           <span>{isProcessing ? 'Processing...' : 'Add Photo'}</span>
         </button>
