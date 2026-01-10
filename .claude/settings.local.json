@@ -1,7 +1,18 @@
 {
   "permissions": {
     "allow": [
-      "Bash(npm create:*)"
+      "Bash(npm create:*)",
+      "Bash(bun run build:*)",
+      "Bash(bun run test:run:*)",
+      "Bash(bun add:*)",
+      "Bash(bunx playwright install:*)",
+      "Bash(bun run test:e2e:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "Bash(git config:*)",
+      "Bash(git pull:*)",
+      "Bash(git stash:*)"
     ]
   }
 }
