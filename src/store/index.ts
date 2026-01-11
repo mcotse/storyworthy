@@ -27,7 +27,7 @@ interface AppState {
   randomHistory: string[];
 
   // UI State
-  activeTab: 'home' | 'calendar' | 'analytics' | 'random' | 'settings';
+  activeTab: 'home' | 'calendar' | 'analytics' | 'history' | 'settings';
   expandedCardDate: string | null;
 
   // Toasts

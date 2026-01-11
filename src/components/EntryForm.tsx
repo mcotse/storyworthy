@@ -193,7 +193,7 @@ export function EntryForm({ date = getTodayDateString(), onClose, isEdit = false
             id="storyworthy"
             value={storyworthy}
             onChange={(e) => setStoryworthy(e.target.value)}
-            placeholder="What's the storyworthy moment of today?"
+            placeholder="Write your moment..."
             className={`${styles.textarea} ${error && !storyworthy.trim() && !thankful.trim() ? styles.errorBorder : ''}`}
           />
           {storyworthy.length > 1000 && (
@@ -210,7 +210,7 @@ export function EntryForm({ date = getTodayDateString(), onClose, isEdit = false
             id="thankful"
             value={thankful}
             onChange={(e) => setThankful(e.target.value)}
-            placeholder="What are you thankful for today?"
+            placeholder="Write what you're grateful for..."
             className={`${styles.textarea} ${error && !storyworthy.trim() && !thankful.trim() ? styles.errorBorder : ''}`}
           />
         </div>

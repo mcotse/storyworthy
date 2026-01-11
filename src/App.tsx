@@ -7,7 +7,7 @@ import { UpdatePrompt } from './components/UpdatePrompt';
 import { Home } from './pages/Home';
 import { Calendar } from './pages/Calendar';
 import { Analytics } from './pages/Analytics';
-import { Random } from './pages/Random';
+import { History } from './pages/History';
 import { Settings } from './pages/Settings';
 import { initDB } from './services/db';
 import { scheduleNotifications } from './services/notifications';
@@ -91,8 +91,8 @@ function App() {
         return <Calendar />;
       case 'analytics':
         return <Analytics />;
-      case 'random':
-        return <Random />;
+      case 'history':
+        return <History />;
       case 'settings':
         return <Settings />;
       default:

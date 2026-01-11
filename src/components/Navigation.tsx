@@ -3,18 +3,18 @@ import {
   HomeIcon,
   CalendarDaysIcon,
   ChartBarIcon,
-  ArrowsRightLeftIcon,
+  ClockIcon,
   Cog6ToothIcon,
 } from '@heroicons/react/24/outline';
 import styles from './Navigation.module.css';
 
-type Tab = 'home' | 'calendar' | 'analytics' | 'random' | 'settings';
+type Tab = 'home' | 'calendar' | 'analytics' | 'history' | 'settings';
 
 const tabs: { id: Tab; label: string; Icon: React.ComponentType<React.SVGProps<SVGSVGElement>> }[] = [
   { id: 'home', label: 'Home', Icon: HomeIcon },
   { id: 'calendar', label: 'Calendar', Icon: CalendarDaysIcon },
   { id: 'analytics', label: 'Analytics', Icon: ChartBarIcon },
-  { id: 'random', label: 'Random', Icon: ArrowsRightLeftIcon },
+  { id: 'history', label: 'History', Icon: ClockIcon },
   { id: 'settings', label: 'Settings', Icon: Cog6ToothIcon },
 ];
 

@@ -9,7 +9,6 @@
 .main {
   flex: 1;
   padding: var(--spacing-lg);
-  padding-top: 60px; /* Account for floating search button */
 }
 
 .list {
@@ -76,4 +75,146 @@
 .emptyText {
   color: var(--color-text-muted);
   margin-bottom: var(--spacing-xl);
+}
+
+/* All caught up state */
+.caughtUp {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: var(--spacing-xl) var(--spacing-lg);
+}
+
+.caughtUpIcon {
+  width: 48px;
+  height: 48px;
+  color: var(--color-success, #22c55e);
+  margin-bottom: var(--spacing-md);
+}
+
+.caughtUpTitle {
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin-bottom: var(--spacing-xs);
+}
+
+.caughtUpText {
+  color: var(--color-text-muted);
+  font-size: 0.875rem;
+}
+
+/* Random Memory Section */
+.randomSection {
+  margin-top: var(--spacing-xl);
+  padding-top: var(--spacing-lg);
+  border-top: 1px solid var(--color-border);
+}
+
+.randomHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-md);
+}
+
+.randomTitle {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--color-text-muted);
+}
+
+.shuffleBtn {
+  padding: var(--spacing-sm);
+  color: var(--color-text-muted);
+  border-radius: var(--radius-sm);
+  transition: all var(--transition-fast);
+}
+
+.shuffleBtn:hover {
+  color: var(--color-primary);
+  background-color: rgba(0, 0, 0, 0.04);
+}
+
+.shuffleBtn:active {
+  transform: rotate(180deg);
+}
+
+.shuffleIcon {
+  width: 20px;
+  height: 20px;
+}
+
+/* Random Entry Card */
+.randomCard {
+  background-color: var(--color-card);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  padding: var(--spacing-lg);
+}
+
+.randomCardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-sm);
+}
+
+.randomDate {
+  font-family: var(--font-serif);
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: var(--color-text);
+}
+
+.editBtn {
+  padding: var(--spacing-sm);
+  color: var(--color-text-muted);
+  border-radius: var(--radius-sm);
+  transition: color var(--transition-fast);
+}
+
+.editBtn:hover {
+  color: var(--color-primary-dark);
+}
+
+.editIcon {
+  width: 20px;
+  height: 20px;
+}
+
+.randomText {
+  font-family: var(--font-sans);
+  font-size: 0.9375rem;
+  color: var(--color-text-light);
+  line-height: 1.5;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  margin: 0;
+}
+
+.randomThankful {
+  margin-top: var(--spacing-md);
+}
+
+.thankfulLabel {
+  display: block;
+  font-family: var(--font-serif);
+  font-size: 0.875rem;
+  font-weight: 400;
+  font-style: italic;
+  color: var(--color-primary-dark);
+  margin-bottom: var(--spacing-xs);
+}
+
+.randomPhoto {
+  width: 100%;
+  max-height: 200px;
+  object-fit: cover;
+  border-radius: var(--radius-md);
+  margin-top: var(--spacing-md);
+  cursor: zoom-in;
 }

@@ -1,25 +1,23 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useStore } from '../store';
-import { EntryCard, EmptyCard } from '../components/EntryCard';
+import { EmptyCard } from '../components/EntryCard';
 import { PhotoModal } from '../components/PhotoModal';
-import { SearchBar } from '../components/SearchBar';
 import { EntryForm } from '../components/EntryForm';
-import { getTodayDateString, getAllDatesBetween } from '../utils/date';
-import { PencilIcon } from '@heroicons/react/24/outline';
+import { getTodayDateString, getAllDatesBetween, formatDateString } from '../utils/date';
+import { PencilIcon, ArrowPathIcon, PencilSquareIcon, CheckCircleIcon } from '@heroicons/react/24/outline';
+import type { Entry } from '../types/entry';
 import styles from './Home.module.css';
 
 export function Home() {
-  const [createDate, setCreateDate] = useState<string | null>(null); // For creating new entries
-  const [editDate, setEditDate] = useState<string | null>(null); // For editing existing entries
+  const [createDate, setCreateDate] = useState<string | null>(null);
+  const [editDate, setEditDate] = useState<string | null>(null);
   const [selectedPhoto, setSelectedPhoto] = useState<string | null>(null);
+  const [randomEntry, setRandomEntry] = useState<Entry | null>(null);
 
   const entries = useStore((state) => state.entries);
-  const searchQuery = useStore((state) => state.searchQuery);
-  const searchResults = useStore((state) => state.searchResults);
-  const expandedCardDate = useStore((state) => state.expandedCardDate);
-  const setExpandedCard = useStore((state) => state.setExpandedCard);
   const loadEntries = useStore((state) => state.loadEntries);
   const isLoading = useStore((state) => state.isLoading);
+  const getRandomEntry = useStore((state) => state.getRandomEntry);
 
   useEffect(() => {
     loadEntries();
@@ -27,37 +25,44 @@ export function Home() {
 
   const todayDate = getTodayDateString();
 
-  // Generate a list of all dates from oldest entry to today with entries and gaps
-  const displayItems = useMemo(() => {
-    // If searching, just show search results
-    if (searchQuery) {
-      return searchResults.map((entry) => ({ type: 'entry' as const, date: entry.date, entry }));
+  // Get completed entries for random selection
+  const completedEntries = useMemo(() => {
+    return entries.filter((e) => e.storyworthy || e.thankful);
+  }, [entries]);
+
+  // Auto-refresh random entry on mount and when entries change
+  useEffect(() => {
+    if (completedEntries.length > 0) {
+      setRandomEntry(getRandomEntry());
     }
+  }, [completedEntries.length, getRandomEntry]);
 
-    // Create a map of dates to entries for quick lookup
+  // Generate a list of ONLY missing/empty entries
+  const missingDates = useMemo(() => {
     const entryMap = new Map(entries.map((e) => [e.date, e]));
-
-    // Find the oldest entry date
     const oldestEntry = entries.length > 0 ? entries[entries.length - 1] : null;
+
     if (!oldestEntry) {
-      // No entries yet, just show today as empty
-      return [{ type: 'empty' as const, date: todayDate }];
+      // No entries yet, show today as empty
+      return [todayDate];
     }
 
     // Get all dates from oldest entry to today
     const allDates = getAllDatesBetween(oldestEntry.date, todayDate);
 
-    // Create display items (newest first)
+    // Filter to ONLY empty dates
     return allDates
-      .sort((a, b) => b.localeCompare(a))
-      .map((date) => {
+      .filter((date) => {
         const entry = entryMap.get(date);
-        if (entry && (entry.storyworthy || entry.thankful)) {
-          return { type: 'entry' as const, date, entry };
-        }
-        return { type: 'empty' as const, date };
-      });
-  }, [entries, searchQuery, searchResults, todayDate]);
+        return !entry || (!entry.storyworthy && !entry.thankful);
+      })
+      .sort((a, b) => b.localeCompare(a)); // Newest first
+  }, [entries, todayDate]);
+
+  const handleShuffle = () => {
+    const newEntry = getRandomEntry();
+    setRandomEntry(newEntry);
+  };
 
   if (createDate || editDate) {
     return (
@@ -74,8 +79,6 @@ export function Home() {
 
   return (
     <div className={styles.container}>
-      <SearchBar />
-
       <main className={styles.main}>
         {isLoading ? (
           <div className={styles.loading}>
@@ -84,6 +87,7 @@ export function Home() {
             <div className={styles.skeleton} />
           </div>
         ) : entries.length === 0 ? (
+          // First-time user empty state
           <div className={styles.empty}>
             <div className={styles.emptyIcon}>
               <PencilIcon className={styles.emptyIconSvg} />
@@ -95,27 +99,73 @@ export function Home() {
             </button>
           </div>
         ) : (
-          <div className={styles.list}>
-            {displayItems.map((item) =>
-              item.type === 'entry' ? (
-                <EntryCard
-                  key={item.date}
-                  entry={item.entry}
-                  isExpanded={expandedCardDate === item.date}
-                  onToggle={() => setExpandedCard(expandedCardDate === item.date ? null : item.date)}
-                  onEdit={() => setEditDate(item.date)}
-                  onPhotoClick={setSelectedPhoto}
-                />
-              ) : (
-                <EmptyCard
-                  key={item.date}
-                  date={item.date}
-                  isToday={item.date === todayDate}
-                  onClick={() => setCreateDate(item.date)}
-                />
-              )
+          <>
+            {/* Missing entries section */}
+            {missingDates.length > 0 ? (
+              <div className={styles.list}>
+                {missingDates.map((date) => (
+                  <EmptyCard
+                    key={date}
+                    date={date}
+                    isToday={date === todayDate}
+                    onClick={() => setCreateDate(date)}
+                  />
+                ))}
+              </div>
+            ) : (
+              // All caught up state
+              <div className={styles.caughtUp}>
+                <CheckCircleIcon className={styles.caughtUpIcon} />
+                <h2 className={styles.caughtUpTitle}>All caught up!</h2>
+                <p className={styles.caughtUpText}>You've written entries for every day</p>
+              </div>
             )}
-          </div>
+
+            {/* Random memory section */}
+            {randomEntry && (
+              <div className={styles.randomSection}>
+                <div className={styles.randomHeader}>
+                  <h2 className={styles.randomTitle}>Random Memory</h2>
+                  <button
+                    className={styles.shuffleBtn}
+                    onClick={handleShuffle}
+                    aria-label="Shuffle random memory"
+                  >
+                    <ArrowPathIcon className={styles.shuffleIcon} />
+                  </button>
+                </div>
+                <article className={styles.randomCard}>
+                  <header className={styles.randomCardHeader}>
+                    <h3 className={styles.randomDate}>{formatDateString(randomEntry.date)}</h3>
+                    <button
+                      className={styles.editBtn}
+                      onClick={() => setEditDate(randomEntry.date)}
+                      aria-label="Edit entry"
+                    >
+                      <PencilSquareIcon className={styles.editIcon} />
+                    </button>
+                  </header>
+                  {randomEntry.storyworthy && (
+                    <p className={styles.randomText}>{randomEntry.storyworthy}</p>
+                  )}
+                  {randomEntry.thankful && (
+                    <div className={styles.randomThankful}>
+                      <span className={styles.thankfulLabel}>Thankful for</span>
+                      <p className={styles.randomText}>{randomEntry.thankful}</p>
+                    </div>
+                  )}
+                  {randomEntry.photo && (
+                    <img
+                      src={randomEntry.thumbnail || randomEntry.photo}
+                      alt=""
+                      className={styles.randomPhoto}
+                      onClick={() => setSelectedPhoto(randomEntry.photo!)}
+                    />
+                  )}
+                </article>
+              </div>
+            )}
+          </>
         )}
       </main>
 
