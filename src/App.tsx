@@ -10,7 +10,7 @@ import { Analytics } from './pages/Analytics';
 import { History } from './pages/History';
 import { Settings } from './pages/Settings';
 import { initDB } from './services/db';
-import { scheduleNotifications } from './services/notifications';
+import { scheduleNotifications, updateBadge, getIncompleteDaysCount } from './services/notifications';
 import './styles/transitions.css';
 
 function App() {
@@ -30,11 +30,21 @@ function App() {
     }
     prevTabRef.current = activeTab;
   }, [activeTab]);
+  const entries = useStore((state) => state.entries);
   const onboardingComplete = useStore((state) => state.onboardingComplete);
   const notificationSettings = useStore((state) => state.notificationSettings);
   const loadEntries = useStore((state) => state.loadEntries);
   const initAuth = useStore((state) => state.initAuth);
   const setOnline = useStore((state) => state.setOnline);
+
+  // Update badge when entries change
+  useEffect(() => {
+    const updateAppBadge = async () => {
+      const count = await getIncompleteDaysCount();
+      await updateBadge(count);
+    };
+    updateAppBadge();
+  }, [entries]);
 
   useEffect(() => {
     const init = async () => {

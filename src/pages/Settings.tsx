@@ -255,6 +255,10 @@ export function Settings() {
                   </label>
                 </div>
               </div>
+
+              <p className={styles.note}>
+                Note: Reminders only work while the app is open. iOS does not support background notifications for web apps.
+              </p>
             </>
           )}
         </section>
