@@ -1,13 +1,19 @@
-/* Page transitions */
+/* Page transitions - smooth cross-fade between tabs */
 .page-container {
-  opacity: 0;
-  transform: translateY(4px);
-  transition: opacity 150ms ease-out, transform 150ms ease-out;
+  flex: 1;
+  opacity: 1;
+  transform: scale(1);
+  transition: opacity 125ms ease-out, transform 125ms ease-out;
 }
 
 .page-container.page-visible {
   opacity: 1;
-  transform: translateY(0);
+  transform: scale(1);
+}
+
+.page-container.page-animating {
+  opacity: 0;
+  transform: scale(0.98);
 }
 
 /* Card expand/collapse transitions */

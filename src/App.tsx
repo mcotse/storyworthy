@@ -11,24 +11,42 @@ import { History } from './pages/History';
 import { Settings } from './pages/Settings';
 import { initDB } from './services/db';
 import { scheduleNotifications, updateBadge, getIncompleteDaysCount } from './services/notifications';
+import type { Tab } from './store';
 import './styles/transitions.css';
+
+const TRANSITION_DURATION = 250; // ms
 
 function App() {
   const [isReady, setIsReady] = useState(false);
   const [showOnboarding, setShowOnboarding] = useState(false);
-  const [isTransitioning, setIsTransitioning] = useState(false);
-  const prevTabRef = useRef<string | null>(null);
+  const [displayedTab, setDisplayedTab] = useState<Tab>('home');
+  const [isAnimating, setIsAnimating] = useState(false);
+  const prevTabRef = useRef<Tab>('home');
 
   const activeTab = useStore((state) => state.activeTab);
 
-  // Handle tab transitions
+  // Handle tab transitions with cross-fade
   useEffect(() => {
-    if (prevTabRef.current !== null && prevTabRef.current !== activeTab) {
-      setIsTransitioning(true);
-      const timer = setTimeout(() => setIsTransitioning(false), 150);
-      return () => clearTimeout(timer);
+    if (prevTabRef.current !== activeTab) {
+      // Start exit animation
+      setIsAnimating(true);
+
+      // After half the duration, switch the content
+      const switchTimer = setTimeout(() => {
+        setDisplayedTab(activeTab);
+      }, TRANSITION_DURATION / 2);
+
+      // After full duration, end animation
+      const endTimer = setTimeout(() => {
+        setIsAnimating(false);
+        prevTabRef.current = activeTab;
+      }, TRANSITION_DURATION);
+
+      return () => {
+        clearTimeout(switchTimer);
+        clearTimeout(endTimer);
+      };
     }
-    prevTabRef.current = activeTab;
   }, [activeTab]);
   const entries = useStore((state) => state.entries);
   const onboardingComplete = useStore((state) => state.onboardingComplete);
@@ -106,8 +124,8 @@ function App() {
     return <Onboarding onComplete={() => setShowOnboarding(false)} />;
   }
 
-  const renderPage = () => {
-    switch (activeTab) {
+  const renderPage = (tab: Tab) => {
+    switch (tab) {
       case 'home':
         return <Home />;
       case 'calendar':
@@ -125,8 +143,10 @@ function App() {
 
   return (
     <>
-      <main style={{ flex: 1 }} className={`page-container ${isTransitioning ? '' : 'page-visible'}`}>
-        {renderPage()}
+      <main
+        className={`page-container ${isAnimating ? 'page-animating' : 'page-visible'}`}
+      >
+        {renderPage(displayedTab)}
       </main>
       <Navigation />
       <Toast />

@@ -7,6 +7,8 @@ import * as sync from '../services/sync';
 import * as auth from '../services/auth';
 import { isSupabaseConfigured } from '../services/supabase';
 
+export type Tab = 'home' | 'calendar' | 'analytics' | 'history' | 'settings';
+
 interface Toast {
   id: string;
   message: string;
@@ -27,7 +29,7 @@ interface AppState {
   randomHistory: string[];
 
   // UI State
-  activeTab: 'home' | 'calendar' | 'analytics' | 'history' | 'settings';
+  activeTab: Tab;
   expandedCardDate: string | null;
 
   // Toasts
