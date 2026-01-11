@@ -164,7 +164,7 @@ export function EntryForm({ date = getTodayDateString(), onClose, isEdit = false
     setIsClosing(true);
     setTimeout(() => {
       onClose();
-    }, 200); // Match animation duration
+    }, 120); // Match animation duration
   };
 
   if (isLoading) {
@@ -186,26 +186,11 @@ export function EntryForm({ date = getTodayDateString(), onClose, isEdit = false
         <h1 className={styles.title}>
           {isEdit ? 'Edit Entry' : formatDateString(date)}
         </h1>
-        <div className={styles.headerActions}>
-          {isEdit && (
-            <button type="button" className={styles.deleteBtn} onClick={handleDelete}>
-              <TrashIcon className={styles.deleteIcon} />
-            </button>
-          )}
-          <button
-            type="button"
-            className={`${styles.saveBtn} ${canSave ? styles.saveBtnActive : ''}`}
-            onClick={handleSubmit}
-            disabled={isSaving || !canSave}
-            aria-label="Save entry"
-          >
-            {isSaving ? (
-              <span className={styles.saveSpinner} />
-            ) : (
-              <CheckIcon className={styles.saveIcon} />
-            )}
+        {isEdit && (
+          <button type="button" className={styles.deleteBtn} onClick={handleDelete}>
+            <TrashIcon className={styles.deleteIcon} />
           </button>
-        </div>
+        )}
       </header>
 
       <form className={styles.form} onSubmit={handleSubmit}>
@@ -248,6 +233,20 @@ export function EntryForm({ date = getTodayDateString(), onClose, isEdit = false
 
         {error && <p className={styles.error}>{error}</p>}
       </form>
+
+      <button
+        type="button"
+        className={`${styles.fab} ${canSave ? styles.fabActive : ''}`}
+        onClick={handleSubmit}
+        disabled={isSaving || !canSave}
+        aria-label="Save entry"
+      >
+        {isSaving ? (
+          <span className={styles.fabSpinner} />
+        ) : (
+          <CheckIcon className={styles.fabIcon} />
+        )}
+      </button>
     </div>
   );
 }

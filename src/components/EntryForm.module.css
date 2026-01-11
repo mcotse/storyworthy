@@ -6,11 +6,11 @@
 }
 
 .opening {
-  animation: expandIn 250ms cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  animation: expandIn 150ms ease-out forwards;
 }
 
 .closing {
-  animation: shrinkOut 200ms ease-in forwards;
+  animation: shrinkOut 120ms ease-in forwards;
 }
 
 @keyframes expandIn {
@@ -59,14 +59,9 @@
   font-weight: 600;
 }
 
-.headerActions {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-sm);
-}
-
 .deleteBtn {
   padding: var(--spacing-sm);
+  margin: calc(-1 * var(--spacing-sm));
   color: var(--color-error);
 }
 
@@ -76,45 +71,51 @@
   height: 24px;
 }
 
-.saveBtn {
-  width: 36px;
-  height: 36px;
+/* Floating Action Button */
+.fab {
+  position: fixed;
+  bottom: calc(24px + env(safe-area-inset-bottom, 0px));
+  right: 24px;
+  width: 56px;
+  height: 56px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   background-color: var(--color-border);
   color: var(--color-text-muted);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   transition: all var(--transition-fast);
+  z-index: 100;
 }
 
-.saveBtn:disabled {
-  opacity: 0.5;
+.fab:disabled {
+  opacity: 0.6;
 }
 
-.saveBtnActive {
+.fabActive {
   background-color: var(--color-primary-dark);
   color: white;
 }
 
-.saveBtnActive:hover:not(:disabled) {
+.fabActive:hover:not(:disabled) {
   background-color: #B5776B;
   transform: scale(1.05);
 }
 
-.saveBtnActive:active:not(:disabled) {
-  transform: scale(0.95);
+.fabActive:active:not(:disabled) {
+  transform: scale(0.92);
 }
 
-.saveIcon {
-  width: 20px;
-  height: 20px;
+.fabIcon {
+  width: 28px;
+  height: 28px;
 }
 
-.saveSpinner {
-  width: 18px;
-  height: 18px;
-  border: 2px solid transparent;
+.fabSpinner {
+  width: 24px;
+  height: 24px;
+  border: 3px solid transparent;
   border-top-color: currentColor;
   border-radius: 50%;
   animation: spin 0.6s linear infinite;
