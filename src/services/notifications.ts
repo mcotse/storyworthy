@@ -128,8 +128,51 @@ export async function updateBadge(count: number): Promise<void> {
   }
 }
 
-export async function getIncompleteDaysCount(): Promise<number> {
-  // For now, just check if today is incomplete
+interface NotificationSettings {
+  morningEnabled: boolean;
+  morningTime: string;
+  eveningEnabled: boolean;
+  eveningTime: string;
+}
+
+export async function getIncompleteDaysCount(settings?: NotificationSettings): Promise<number> {
   const todayEntry = await getEntry(getTodayDateString());
-  return todayEntry && (todayEntry.storyworthy || todayEntry.thankful) ? 0 : 1;
+  const hasEntry = todayEntry && (todayEntry.storyworthy || todayEntry.thankful);
+
+  if (hasEntry) {
+    return 0;
+  }
+
+  // If no notification settings provided, don't show badge
+  if (!settings) {
+    return 0;
+  }
+
+  // Only show badge if current time is past the first enabled notification time
+  const now = new Date();
+  const currentMinutes = now.getHours() * 60 + now.getMinutes();
+
+  // Get the earliest enabled notification time
+  let earliestNotificationMinutes: number | null = null;
+
+  if (settings.morningEnabled) {
+    const [hours, minutes] = settings.morningTime.split(':').map(Number);
+    earliestNotificationMinutes = hours * 60 + minutes;
+  }
+
+  if (settings.eveningEnabled) {
+    const [hours, minutes] = settings.eveningTime.split(':').map(Number);
+    const eveningMinutes = hours * 60 + minutes;
+    if (earliestNotificationMinutes === null || eveningMinutes < earliestNotificationMinutes) {
+      earliestNotificationMinutes = eveningMinutes;
+    }
+  }
+
+  // If no notifications enabled, don't show badge
+  if (earliestNotificationMinutes === null) {
+    return 0;
+  }
+
+  // Show badge only if current time is past the notification time
+  return currentMinutes >= earliestNotificationMinutes ? 1 : 0;
 }

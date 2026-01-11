@@ -57,7 +57,6 @@ export function PhotoUpload({ photo, thumbnail, onPhotoChange }: PhotoUploadProp
         ref={fileInputRef}
         type="file"
         accept="image/*"
-        capture="environment"
         onChange={handleFileSelect}
         className={styles.input}
         aria-label="Upload photo"

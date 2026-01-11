@@ -4,7 +4,7 @@ import type { Entry } from '../types/entry';
 import { getTodayDateString, formatDateString } from '../utils/date';
 import { saveDraft, getDraft, clearDraft, getEntry } from '../services/db';
 import { PhotoUpload } from './PhotoUpload';
-import { ChevronLeftIcon, TrashIcon } from '@heroicons/react/24/outline';
+import { ChevronLeftIcon, TrashIcon, CheckIcon } from '@heroicons/react/24/outline';
 import styles from './EntryForm.module.css';
 
 interface EntryFormProps {
@@ -14,6 +14,7 @@ interface EntryFormProps {
 }
 
 export function EntryForm({ date = getTodayDateString(), onClose, isEdit = false }: EntryFormProps) {
+  const [isClosing, setIsClosing] = useState(false);
   const [storyworthy, setStoryworthy] = useState('');
   const [thankful, setThankful] = useState('');
   const [photo, setPhoto] = useState<string | undefined>();
@@ -136,7 +137,7 @@ export function EntryForm({ date = getTodayDateString(), onClose, isEdit = false
         await clearDraft(date);
       }
 
-      onClose();
+      handleClose();
     } catch (err) {
       // Display detailed error message
       const errorMessage = err instanceof Error ? err.message : 'Unknown error';
@@ -152,11 +153,18 @@ export function EntryForm({ date = getTodayDateString(), onClose, isEdit = false
 
     try {
       await deleteEntry(date);
-      onClose();
+      handleClose();
     } catch (err) {
       setError('Failed to delete entry.');
       console.error(err);
     }
+  };
+
+  const handleClose = () => {
+    setIsClosing(true);
+    setTimeout(() => {
+      onClose();
+    }, 200); // Match animation duration
   };
 
   if (isLoading) {
@@ -167,20 +175,37 @@ export function EntryForm({ date = getTodayDateString(), onClose, isEdit = false
     );
   }
 
+  const canSave = storyworthy.trim() || thankful.trim();
+
   return (
-    <div className={styles.container}>
+    <div className={`${styles.container} ${isClosing ? styles.closing : styles.opening}`}>
       <header className={styles.header}>
-        <button type="button" className={styles.backBtn} onClick={onClose}>
+        <button type="button" className={styles.backBtn} onClick={handleClose}>
           <ChevronLeftIcon className={styles.backIcon} />
         </button>
         <h1 className={styles.title}>
           {isEdit ? 'Edit Entry' : formatDateString(date)}
         </h1>
-        {isEdit && (
-          <button type="button" className={styles.deleteBtn} onClick={handleDelete}>
-            <TrashIcon className={styles.deleteIcon} />
+        <div className={styles.headerActions}>
+          {isEdit && (
+            <button type="button" className={styles.deleteBtn} onClick={handleDelete}>
+              <TrashIcon className={styles.deleteIcon} />
+            </button>
+          )}
+          <button
+            type="button"
+            className={`${styles.saveBtn} ${canSave ? styles.saveBtnActive : ''}`}
+            onClick={handleSubmit}
+            disabled={isSaving || !canSave}
+            aria-label="Save entry"
+          >
+            {isSaving ? (
+              <span className={styles.saveSpinner} />
+            ) : (
+              <CheckIcon className={styles.saveIcon} />
+            )}
           </button>
-        )}
+        </div>
       </header>
 
       <form className={styles.form} onSubmit={handleSubmit}>
@@ -222,14 +247,6 @@ export function EntryForm({ date = getTodayDateString(), onClose, isEdit = false
         />
 
         {error && <p className={styles.error}>{error}</p>}
-
-        <button
-          type="submit"
-          className={`btn-primary ${styles.submitBtn}`}
-          disabled={isSaving}
-        >
-          {isSaving ? 'Saving...' : 'Save Entry'}
-        </button>
       </form>
     </div>
   );

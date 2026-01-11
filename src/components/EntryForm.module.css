@@ -5,6 +5,36 @@
   padding-bottom: var(--spacing-xxl);
 }
 
+.opening {
+  animation: expandIn 250ms cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+.closing {
+  animation: shrinkOut 200ms ease-in forwards;
+}
+
+@keyframes expandIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.92);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes shrinkOut {
+  0% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.92);
+  }
+}
+
 .header {
   display: flex;
   align-items: center;
@@ -29,9 +59,14 @@
   font-weight: 600;
 }
 
+.headerActions {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
 .deleteBtn {
   padding: var(--spacing-sm);
-  margin: calc(-1 * var(--spacing-sm));
   color: var(--color-error);
 }
 
@@ -39,6 +74,56 @@
 .deleteIcon {
   width: 24px;
   height: 24px;
+}
+
+.saveBtn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--color-border);
+  color: var(--color-text-muted);
+  transition: all var(--transition-fast);
+}
+
+.saveBtn:disabled {
+  opacity: 0.5;
+}
+
+.saveBtnActive {
+  background-color: var(--color-primary-dark);
+  color: white;
+}
+
+.saveBtnActive:hover:not(:disabled) {
+  background-color: #B5776B;
+  transform: scale(1.05);
+}
+
+.saveBtnActive:active:not(:disabled) {
+  transform: scale(0.95);
+}
+
+.saveIcon {
+  width: 20px;
+  height: 20px;
+}
+
+.saveSpinner {
+  width: 18px;
+  height: 18px;
+  border: 2px solid transparent;
+  border-top-color: currentColor;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .form {
@@ -80,13 +165,6 @@
   color: var(--color-error);
   font-size: 0.875rem;
   text-align: center;
-}
-
-.submitBtn {
-  width: 100%;
-  padding: var(--spacing-lg);
-  font-size: 1.0625rem;
-  margin-top: var(--spacing-md);
 }
 
 .loading {

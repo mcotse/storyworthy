@@ -37,14 +37,14 @@ function App() {
   const initAuth = useStore((state) => state.initAuth);
   const setOnline = useStore((state) => state.setOnline);
 
-  // Update badge when entries change
+  // Update badge when entries change or notification settings change
   useEffect(() => {
     const updateAppBadge = async () => {
-      const count = await getIncompleteDaysCount();
+      const count = await getIncompleteDaysCount(notificationSettings);
       await updateBadge(count);
     };
     updateAppBadge();
-  }, [entries]);
+  }, [entries, notificationSettings]);
 
   useEffect(() => {
     const init = async () => {
