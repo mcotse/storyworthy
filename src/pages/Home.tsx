@@ -122,7 +122,7 @@ export function Home() {
                     <ArrowPathIcon className={styles.shuffleIcon} />
                   </button>
                 </div>
-                <article className={styles.randomCard}>
+                <article key={randomEntry.date} className={styles.randomCard}>
                   <header className={styles.randomCardHeader}>
                     <h3 className={styles.randomDate}>{formatDateString(randomEntry.date)}</h3>
                     <button

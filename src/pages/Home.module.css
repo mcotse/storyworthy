@@ -15,6 +15,16 @@
   display: flex;
   flex-direction: column;
   gap: var(--spacing-md);
+  animation: listFadeIn 0.5s ease-out;
+}
+
+@keyframes listFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 .loading {
@@ -169,6 +179,18 @@
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-md);
   padding: var(--spacing-lg);
+  animation: cardFadeIn 0.5s ease-out;
+}
+
+@keyframes cardFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .randomCardHeader {

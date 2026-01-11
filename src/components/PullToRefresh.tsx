@@ -77,7 +77,8 @@ export function PullToRefresh({ onRefresh, children }: PullToRefreshProps) {
         className={styles.indicator}
         style={{
           transform: `translateY(${pullDistance - 50}px)`,
-          opacity: progress
+          opacity: progress,
+          transition: isPulling.current ? 'none' : 'all 0.4s ease-out'
         }}
       >
         <ArrowPathIcon
@@ -93,7 +94,7 @@ export function PullToRefresh({ onRefresh, children }: PullToRefreshProps) {
         className={styles.content}
         style={{
           transform: `translateY(${pullDistance}px)`,
-          transition: isPulling.current ? 'none' : 'transform 0.2s ease-out'
+          transition: isPulling.current ? 'none' : 'transform 0.4s ease-out'
         }}
       >
         {children}
