@@ -195,10 +195,6 @@ export function Settings() {
 
   return (
     <div className={styles.container}>
-      <header className={styles.header}>
-        <h1 className={styles.title}>Settings</h1>
-      </header>
-
       <main className={styles.main}>
         {/* Notifications Section */}
         <section className={styles.section}>

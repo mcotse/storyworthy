@@ -1,0 +1,34 @@
+/* Page transitions */
+.page-container {
+  opacity: 0;
+  transform: translateY(4px);
+  transition: opacity 150ms ease-out, transform 150ms ease-out;
+}
+
+.page-container.page-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Card expand/collapse transitions */
+.card-content-enter {
+  opacity: 0;
+  max-height: 0;
+}
+
+.card-content-enter-active {
+  opacity: 1;
+  max-height: 600px;
+  transition: opacity 200ms ease-out, max-height 200ms ease-out;
+}
+
+.card-content-exit {
+  opacity: 1;
+  max-height: 600px;
+}
+
+.card-content-exit-active {
+  opacity: 0;
+  max-height: 0;
+  transition: opacity 150ms ease-in, max-height 150ms ease-in;
+}

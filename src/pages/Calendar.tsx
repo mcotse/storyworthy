@@ -73,10 +73,6 @@ export function Calendar() {
 
   return (
     <div className={styles.container}>
-      <header className={styles.header}>
-        <h1 className={styles.title}>Calendar</h1>
-      </header>
-
       <div className={styles.navigation}>
         <button className={styles.navBtn} onClick={handlePrevMonth} aria-label="Previous month">
           <ChevronLeftIcon className={styles.navIcon} />

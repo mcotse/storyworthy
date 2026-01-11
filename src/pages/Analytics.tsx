@@ -72,9 +72,6 @@ export function Analytics() {
   if (!stats || entries.length < 3) {
     return (
       <div className={styles.container}>
-        <header className={styles.header}>
-          <h1 className={styles.title}>Analytics</h1>
-        </header>
         <div className={styles.empty}>
           <div className={styles.emptyIcon}>
             <ChartBarIcon className={styles.emptyIconSvg} />
@@ -95,10 +92,6 @@ export function Analytics() {
 
   return (
     <div className={styles.container}>
-      <header className={styles.header}>
-        <h1 className={styles.title}>Analytics</h1>
-      </header>
-
       <main className={styles.main}>
         {/* Streak Section */}
         <section className={styles.section}>

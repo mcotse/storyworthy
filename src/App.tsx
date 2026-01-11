@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useStore } from './store';
 import { Navigation } from './components/Navigation';
 import { Toast } from './components/Toast';
@@ -11,12 +11,25 @@ import { History } from './pages/History';
 import { Settings } from './pages/Settings';
 import { initDB } from './services/db';
 import { scheduleNotifications } from './services/notifications';
+import './styles/transitions.css';
 
 function App() {
   const [isReady, setIsReady] = useState(false);
   const [showOnboarding, setShowOnboarding] = useState(false);
+  const [isTransitioning, setIsTransitioning] = useState(false);
+  const prevTabRef = useRef<string | null>(null);
 
   const activeTab = useStore((state) => state.activeTab);
+
+  // Handle tab transitions
+  useEffect(() => {
+    if (prevTabRef.current !== null && prevTabRef.current !== activeTab) {
+      setIsTransitioning(true);
+      const timer = setTimeout(() => setIsTransitioning(false), 150);
+      return () => clearTimeout(timer);
+    }
+    prevTabRef.current = activeTab;
+  }, [activeTab]);
   const onboardingComplete = useStore((state) => state.onboardingComplete);
   const notificationSettings = useStore((state) => state.notificationSettings);
   const loadEntries = useStore((state) => state.loadEntries);
@@ -102,7 +115,7 @@ function App() {
 
   return (
     <>
-      <main style={{ flex: 1 }}>
+      <main style={{ flex: 1 }} className={`page-container ${isTransitioning ? '' : 'page-visible'}`}>
         {renderPage()}
       </main>
       <Navigation />

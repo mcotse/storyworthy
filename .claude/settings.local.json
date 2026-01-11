@@ -12,7 +12,10 @@
       "Bash(git push:*)",
       "Bash(git config:*)",
       "Bash(git pull:*)",
-      "Bash(git stash:*)"
+      "Bash(git stash:*)",
+      "Bash(curl:*)",
+      "Skill(dev-browser:dev-browser)",
+      "Bash(npx tsx:*)"
     ]
   }
 }
