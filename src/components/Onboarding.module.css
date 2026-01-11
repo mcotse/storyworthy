@@ -54,6 +54,12 @@
   line-height: 1.6;
 }
 
+.enableBtn {
+  margin-top: var(--spacing-xl);
+  width: 100%;
+  max-width: 280px;
+}
+
 .footer {
   display: flex;
   flex-direction: column;

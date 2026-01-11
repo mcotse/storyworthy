@@ -206,6 +206,22 @@ export function Settings() {
             <p className={styles.warning}>
               Notifications are blocked. Enable them in your browser settings.
             </p>
+          ) : notificationStatus === 'default' ? (
+            <>
+              <p className={styles.settingDesc} style={{ marginBottom: 'var(--spacing-md)' }}>
+                Enable notifications to get daily reminders to write your journal entries.
+              </p>
+              <button
+                className="btn-primary"
+                onClick={async () => {
+                  const granted = await requestNotificationPermission();
+                  setNotificationStatus(granted ? 'granted' : 'denied');
+                }}
+                style={{ width: '100%' }}
+              >
+                Enable Notifications
+              </button>
+            </>
           ) : (
             <>
               <div className={styles.settingRow}>
