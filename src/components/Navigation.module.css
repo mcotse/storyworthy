@@ -23,6 +23,7 @@
   border-radius: var(--radius-sm);
   min-width: 60px;
   position: relative;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .tab:hover {
@@ -33,16 +34,15 @@
   color: var(--color-primary-dark);
 }
 
-.tab.active::after {
-  content: '';
+.indicator {
   position: absolute;
-  bottom: -2px;
-  left: 50%;
-  transform: translateX(-50%);
+  bottom: calc(env(safe-area-inset-bottom, 8px) + var(--spacing-sm) - 2px);
+  left: 0;
   width: 24px;
   height: 2px;
   background-color: var(--color-primary-dark);
   border-radius: 1px;
+  transition: transform 250ms ease-out;
 }
 
 .label {

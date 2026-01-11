@@ -22,6 +22,8 @@ export function Navigation() {
   const activeTab = useStore((state) => state.activeTab);
   const setActiveTab = useStore((state) => state.setActiveTab);
 
+  const activeIndex = tabs.findIndex((tab) => tab.id === activeTab);
+
   return (
     <nav className={`${styles.nav} safe-area-bottom`}>
       {tabs.map((tab) => (
@@ -36,6 +38,12 @@ export function Navigation() {
           <span className={styles.label}>{tab.label}</span>
         </button>
       ))}
+      <div
+        className={styles.indicator}
+        style={{
+          transform: `translateX(calc(${activeIndex} * (100vw / ${tabs.length}) + (100vw / ${tabs.length} / 2) - 50%))`,
+        }}
+      />
     </nav>
   );
 }
