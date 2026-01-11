@@ -138,8 +138,10 @@ export function EntryForm({ date = getTodayDateString(), onClose, isEdit = false
 
       onClose();
     } catch (err) {
-      setError('Failed to save entry. Please try again.');
-      console.error(err);
+      // Display detailed error message
+      const errorMessage = err instanceof Error ? err.message : 'Unknown error';
+      setError(errorMessage);
+      console.error('Save failed:', err);
     } finally {
       setIsSaving(false);
     }

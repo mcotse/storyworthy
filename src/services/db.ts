@@ -10,42 +10,74 @@ let db: IDBDatabase | null = null;
 export async function initDB(): Promise<IDBDatabase> {
   if (db) return db;
 
+  // Check if IndexedDB is available (disabled in Safari Private Browsing)
+  if (!window.indexedDB) {
+    throw new Error('IndexedDB not available. If using Private Browsing, please use normal mode.');
+  }
+
   return new Promise((resolve, reject) => {
-    const request = indexedDB.open(DB_NAME, DB_VERSION);
+    try {
+      const request = indexedDB.open(DB_NAME, DB_VERSION);
 
-    request.onerror = () => reject(request.error);
+      request.onerror = () => {
+        const error = request.error;
+        // Safari Private Browsing throws QuotaExceededError
+        if (error?.name === 'QuotaExceededError') {
+          reject(new Error('Storage not available. Private Browsing mode may be enabled.'));
+        } else {
+          reject(new Error(`Database error: ${error?.message || 'Unknown error'}`));
+        }
+      };
 
-    request.onsuccess = () => {
-      db = request.result;
-      resolve(db);
-    };
+      request.onsuccess = () => {
+        db = request.result;
+        resolve(db);
+      };
 
-    request.onupgradeneeded = (event) => {
-      const database = (event.target as IDBOpenDBRequest).result;
+      request.onupgradeneeded = (event) => {
+        const database = (event.target as IDBOpenDBRequest).result;
 
-      // Entries store
-      if (!database.objectStoreNames.contains(STORE_NAME)) {
-        const store = database.createObjectStore(STORE_NAME, { keyPath: 'date' });
-        store.createIndex('createdAt', 'createdAt', { unique: false });
-      }
+        // Entries store
+        if (!database.objectStoreNames.contains(STORE_NAME)) {
+          const store = database.createObjectStore(STORE_NAME, { keyPath: 'date' });
+          store.createIndex('createdAt', 'createdAt', { unique: false });
+        }
 
-      // Drafts store
-      if (!database.objectStoreNames.contains(DRAFT_STORE)) {
-        database.createObjectStore(DRAFT_STORE, { keyPath: 'date' });
-      }
-    };
+        // Drafts store
+        if (!database.objectStoreNames.contains(DRAFT_STORE)) {
+          database.createObjectStore(DRAFT_STORE, { keyPath: 'date' });
+        }
+      };
+    } catch (e) {
+      reject(new Error(`Failed to open database: ${e instanceof Error ? e.message : 'Unknown error'}`));
+    }
   });
 }
 
 export async function createEntry(entry: Entry): Promise<void> {
   const database = await initDB();
   return new Promise((resolve, reject) => {
-    const transaction = database.transaction(STORE_NAME, 'readwrite');
-    const store = transaction.objectStore(STORE_NAME);
-    const request = store.put(entry);
+    try {
+      const transaction = database.transaction(STORE_NAME, 'readwrite');
+      const store = transaction.objectStore(STORE_NAME);
+      const request = store.put(entry);
 
-    request.onerror = () => reject(request.error);
-    request.onsuccess = () => resolve();
+      request.onerror = () => {
+        const error = request.error;
+        if (error?.name === 'QuotaExceededError') {
+          reject(new Error('Storage full. Try deleting old entries or photos.'));
+        } else {
+          reject(new Error(`Failed to save: ${error?.message || 'Unknown error'}`));
+        }
+      };
+      request.onsuccess = () => resolve();
+
+      transaction.onerror = () => {
+        reject(new Error(`Transaction failed: ${transaction.error?.message || 'Unknown error'}`));
+      };
+    } catch (e) {
+      reject(new Error(`Save failed: ${e instanceof Error ? e.message : 'Unknown error'}`));
+    }
   });
 }
 

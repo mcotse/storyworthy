@@ -130,7 +130,9 @@ export const useStore = create<AppState>()(
             get().triggerSync();
           }
         } catch (error) {
-          get().addToast('Failed to save entry', 'error');
+          // Pass through the detailed error message
+          const message = error instanceof Error ? error.message : 'Failed to save entry';
+          get().addToast(message, 'error');
           throw error;
         }
       },
@@ -153,7 +155,9 @@ export const useStore = create<AppState>()(
             get().triggerSync();
           }
         } catch (error) {
-          get().addToast('Failed to update entry', 'error');
+          // Pass through the detailed error message
+          const message = error instanceof Error ? error.message : 'Failed to update entry';
+          get().addToast(message, 'error');
           throw error;
         }
       },
