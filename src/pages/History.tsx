@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { useStore } from '../store';
 import { EntryCard } from '../components/EntryCard';
 import { PhotoModal } from '../components/PhotoModal';
@@ -54,40 +54,43 @@ export function History() {
 
   const hasMore = !searchQuery && visibleCount < allItems.length;
 
-  // Load more when scrolling to bottom
-  const loadMore = useCallback(() => {
-    if (isLoadingMore || !hasMore) return;
+  // Use refs to avoid stale closures in IntersectionObserver
+  const isLoadingMoreRef = useRef(isLoadingMore);
+  const hasMoreRef = useRef(hasMore);
 
-    setIsLoadingMore(true);
-    // Small delay to show loading state
-    setTimeout(() => {
-      setVisibleCount((prev) => prev + PAGE_SIZE);
-      setIsLoadingMore(false);
-    }, 200);
-  }, [isLoadingMore, hasMore]);
+  useEffect(() => {
+    isLoadingMoreRef.current = isLoadingMore;
+  }, [isLoadingMore]);
+
+  useEffect(() => {
+    hasMoreRef.current = hasMore;
+  }, [hasMore]);
 
   // Intersection Observer for infinite scroll
   useEffect(() => {
+    const currentRef = loadMoreRef.current;
+    if (!currentRef || !hasMore) return;
+
     const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting && hasMore) {
-          loadMore();
+      (observerEntries) => {
+        if (observerEntries[0].isIntersecting && hasMoreRef.current && !isLoadingMoreRef.current) {
+          setIsLoadingMore(true);
+          // Small delay to show loading state
+          setTimeout(() => {
+            setVisibleCount((prev) => prev + PAGE_SIZE);
+            setIsLoadingMore(false);
+          }, 200);
         }
       },
-      { threshold: 0.1 }
+      { threshold: 0.1, rootMargin: '100px' }
     );
 
-    const currentRef = loadMoreRef.current;
-    if (currentRef) {
-      observer.observe(currentRef);
-    }
+    observer.observe(currentRef);
 
     return () => {
-      if (currentRef) {
-        observer.unobserve(currentRef);
-      }
+      observer.unobserve(currentRef);
     };
-  }, [hasMore, loadMore]);
+  }, [hasMore]); // Re-create observer when hasMore changes (element appears/disappears)
 
   if (editDate) {
     return (

@@ -100,32 +100,11 @@ export function Home() {
           </div>
         ) : (
           <>
-            {/* Missing entries section */}
-            {missingDates.length > 0 ? (
-              <div className={styles.list}>
-                {missingDates.map((date) => (
-                  <EmptyCard
-                    key={date}
-                    date={date}
-                    isToday={date === todayDate}
-                    onClick={() => setCreateDate(date)}
-                  />
-                ))}
-              </div>
-            ) : (
-              // All caught up state
-              <div className={styles.caughtUp}>
-                <CheckCircleIcon className={styles.caughtUpIcon} />
-                <h2 className={styles.caughtUpTitle}>All caught up!</h2>
-                <p className={styles.caughtUpText}>You've written entries for every day</p>
-              </div>
-            )}
-
-            {/* Random memory section */}
+            {/* Looking back section (random memory) */}
             {randomEntry && (
               <div className={styles.randomSection}>
                 <div className={styles.randomHeader}>
-                  <h2 className={styles.randomTitle}>Random Memory</h2>
+                  <h2 className={styles.randomTitle}>Looking back...</h2>
                   <button
                     className={styles.shuffleBtn}
                     onClick={handleShuffle}
@@ -163,6 +142,27 @@ export function Home() {
                     />
                   )}
                 </article>
+              </div>
+            )}
+
+            {/* Missing entries section */}
+            {missingDates.length > 0 ? (
+              <div className={styles.list}>
+                {missingDates.map((date) => (
+                  <EmptyCard
+                    key={date}
+                    date={date}
+                    isToday={date === todayDate}
+                    onClick={() => setCreateDate(date)}
+                  />
+                ))}
+              </div>
+            ) : (
+              // All caught up state
+              <div className={styles.caughtUp}>
+                <CheckCircleIcon className={styles.caughtUpIcon} />
+                <h2 className={styles.caughtUpTitle}>All caught up!</h2>
+                <p className={styles.caughtUpText}>You've written entries for every day</p>
               </div>
             )}
           </>
