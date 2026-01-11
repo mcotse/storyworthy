@@ -105,11 +105,28 @@
   font-size: 0.875rem;
 }
 
-/* Random Memory Section */
+/* Looking back Section (Random Memory) */
 .randomSection {
-  margin-top: var(--spacing-xl);
+  margin-bottom: var(--spacing-xl);
+}
+
+/* Missing entries section */
+.missingSection {
   padding-top: var(--spacing-lg);
   border-top: 1px solid var(--color-border);
+}
+
+.sectionHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-md);
+}
+
+.sectionTitle {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--color-text-muted);
 }
 
 .randomHeader {

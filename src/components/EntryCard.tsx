@@ -98,15 +98,10 @@ interface EmptyCardProps {
 export function EmptyCard({ date, onClick, isToday = false }: EmptyCardProps) {
   return (
     <article className={`${styles.card} ${styles.empty}`} onClick={onClick}>
-      <header className={styles.header}>
-        <h3 className={styles.date}>
-          {formatDateString(date)}
-          <span className={styles.badge}>!</span>
-        </h3>
-      </header>
-      <p className={styles.emptyText}>
-        {isToday ? "Tap to create today's entry" : 'Tap to fill in this day'}
-      </p>
+      <div className={styles.emptyContent}>
+        <span className={styles.emptyDate}>{formatDateString(date)}</span>
+        <span className={styles.emptyAction}>{isToday ? 'Write' : 'Add'}</span>
+      </div>
     </article>
   );
 }

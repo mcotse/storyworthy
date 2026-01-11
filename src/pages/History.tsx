@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useRef } from 'react';
+import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { useStore } from '../store';
 import { EntryCard } from '../components/EntryCard';
 import { PhotoModal } from '../components/PhotoModal';
@@ -14,7 +14,6 @@ export function History() {
   const [selectedPhoto, setSelectedPhoto] = useState<string | null>(null);
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
-  const loadMoreRef = useRef<HTMLDivElement>(null);
 
   const entries = useStore((state) => state.entries);
   const searchQuery = useStore((state) => state.searchQuery);
@@ -54,9 +53,10 @@ export function History() {
 
   const hasMore = !searchQuery && visibleCount < allItems.length;
 
-  // Use refs to avoid stale closures in IntersectionObserver
+  // Use refs to track current values for the observer callback
   const isLoadingMoreRef = useRef(isLoadingMore);
   const hasMoreRef = useRef(hasMore);
+  const observerRef = useRef<IntersectionObserver | null>(null);
 
   useEffect(() => {
     isLoadingMoreRef.current = isLoadingMore;
@@ -66,16 +66,20 @@ export function History() {
     hasMoreRef.current = hasMore;
   }, [hasMore]);
 
-  // Intersection Observer for infinite scroll
-  useEffect(() => {
-    const currentRef = loadMoreRef.current;
-    if (!currentRef || !hasMore) return;
+  // Callback ref for the load more element - sets up observer when element mounts
+  const loadMoreCallbackRef = useCallback((node: HTMLDivElement | null) => {
+    // Clean up previous observer
+    if (observerRef.current) {
+      observerRef.current.disconnect();
+      observerRef.current = null;
+    }
 
-    const observer = new IntersectionObserver(
-      (observerEntries) => {
-        if (observerEntries[0].isIntersecting && hasMoreRef.current && !isLoadingMoreRef.current) {
+    if (!node) return;
+
+    observerRef.current = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && hasMoreRef.current && !isLoadingMoreRef.current) {
           setIsLoadingMore(true);
-          // Small delay to show loading state
           setTimeout(() => {
             setVisibleCount((prev) => prev + PAGE_SIZE);
             setIsLoadingMore(false);
@@ -85,12 +89,8 @@ export function History() {
       { threshold: 0.1, rootMargin: '100px' }
     );
 
-    observer.observe(currentRef);
-
-    return () => {
-      observer.unobserve(currentRef);
-    };
-  }, [hasMore]); // Re-create observer when hasMore changes (element appears/disappears)
+    observerRef.current.observe(node);
+  }, []);
 
   if (editDate) {
     return (
@@ -146,7 +146,7 @@ export function History() {
 
             {/* Load more trigger */}
             {hasMore && (
-              <div ref={loadMoreRef} className={styles.loadMore}>
+              <div ref={loadMoreCallbackRef} className={styles.loadMore}>
                 {isLoadingMore ? (
                   <div className={styles.loadingSpinner} />
                 ) : (

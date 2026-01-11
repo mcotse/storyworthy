@@ -87,15 +87,16 @@ describe('EmptyCard', () => {
     const onClick = vi.fn()
     render(<EmptyCard date="2024-01-15" onClick={onClick} />)
 
-    expect(screen.getByText(/tap to fill in this day/i)).toBeInTheDocument()
-    expect(screen.getByText('!')).toBeInTheDocument() // badge
+    expect(screen.getByText('Mon, Jan 15, 2024')).toBeInTheDocument()
+    expect(screen.getByText('Add')).toBeInTheDocument()
   })
 
   it('renders correctly for today', () => {
     const onClick = vi.fn()
     render(<EmptyCard date="2024-01-15" onClick={onClick} isToday={true} />)
 
-    expect(screen.getByText(/tap to create today's entry/i)).toBeInTheDocument()
+    expect(screen.getByText('Mon, Jan 15, 2024')).toBeInTheDocument()
+    expect(screen.getByText('Write')).toBeInTheDocument()
   })
 
   it('calls onClick when clicked', () => {

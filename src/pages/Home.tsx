@@ -147,15 +147,20 @@ export function Home() {
 
             {/* Missing entries section */}
             {missingDates.length > 0 ? (
-              <div className={styles.list}>
-                {missingDates.map((date) => (
-                  <EmptyCard
-                    key={date}
-                    date={date}
-                    isToday={date === todayDate}
-                    onClick={() => setCreateDate(date)}
-                  />
-                ))}
+              <div className={styles.missingSection}>
+                <div className={styles.sectionHeader}>
+                  <h2 className={styles.sectionTitle}>To fill in</h2>
+                </div>
+                <div className={styles.list}>
+                  {missingDates.map((date) => (
+                    <EmptyCard
+                      key={date}
+                      date={date}
+                      isToday={date === todayDate}
+                      onClick={() => setCreateDate(date)}
+                    />
+                  ))}
+                </div>
               </div>
             ) : (
               // All caught up state

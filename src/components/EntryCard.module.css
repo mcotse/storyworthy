@@ -28,11 +28,31 @@
   border: 2px dashed var(--color-border);
   box-shadow: none;
   background-color: transparent;
+  padding: var(--spacing-md) var(--spacing-lg);
 }
 
 .card.empty:hover {
   border-color: var(--color-primary);
   box-shadow: none;
+}
+
+.emptyContent {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.emptyDate {
+  font-family: var(--font-serif);
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: var(--color-text);
+}
+
+.emptyAction {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-primary-dark);
 }
 
 .header {
