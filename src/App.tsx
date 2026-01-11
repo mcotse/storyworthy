@@ -6,7 +6,7 @@ import { Onboarding } from './components/Onboarding';
 import { UpdatePrompt } from './components/UpdatePrompt';
 import { Home } from './pages/Home';
 import { Calendar } from './pages/Calendar';
-import { Analytics } from './pages/Analytics';
+import { Trends } from './pages/Trends';
 import { History } from './pages/History';
 import { Settings } from './pages/Settings';
 import { initDB } from './services/db';
@@ -130,8 +130,8 @@ function App() {
         return <Home />;
       case 'calendar':
         return <Calendar />;
-      case 'analytics':
-        return <Analytics />;
+      case 'trends':
+        return <Trends />;
       case 'history':
         return <History />;
       case 'settings':

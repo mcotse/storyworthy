@@ -2,9 +2,9 @@ import { useMemo } from 'react';
 import { useStore } from '../store';
 import { calculateStreak, getTimeOfDay } from '../utils/date';
 import { ChartBarIcon } from '@heroicons/react/24/outline';
-import styles from './Analytics.module.css';
+import styles from './Trends.module.css';
 
-export function Analytics() {
+export function Trends() {
   const entries = useStore((state) => state.entries);
 
   const stats = useMemo(() => {

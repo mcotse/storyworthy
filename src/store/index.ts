@@ -7,7 +7,7 @@ import * as sync from '../services/sync';
 import * as auth from '../services/auth';
 import { isSupabaseConfigured } from '../services/supabase';
 
-export type Tab = 'home' | 'calendar' | 'analytics' | 'history' | 'settings';
+export type Tab = 'home' | 'calendar' | 'history' | 'trends' | 'settings';
 
 interface Toast {
   id: string;

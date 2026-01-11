@@ -8,13 +8,13 @@ import {
 } from '@heroicons/react/24/outline';
 import styles from './Navigation.module.css';
 
-type Tab = 'home' | 'calendar' | 'analytics' | 'history' | 'settings';
+type Tab = 'home' | 'calendar' | 'history' | 'trends' | 'settings';
 
 const tabs: { id: Tab; label: string; Icon: React.ComponentType<React.SVGProps<SVGSVGElement>> }[] = [
   { id: 'home', label: 'Home', Icon: HomeIcon },
   { id: 'calendar', label: 'Calendar', Icon: CalendarDaysIcon },
-  { id: 'analytics', label: 'Analytics', Icon: ChartBarIcon },
   { id: 'history', label: 'History', Icon: ClockIcon },
+  { id: 'trends', label: 'Trends', Icon: ChartBarIcon },
   { id: 'settings', label: 'Settings', Icon: Cog6ToothIcon },
 ];
 
