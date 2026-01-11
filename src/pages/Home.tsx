@@ -9,8 +9,8 @@ import { PencilIcon } from '@heroicons/react/24/outline';
 import styles from './Home.module.css';
 
 export function Home() {
-  const [showForm, setShowForm] = useState(false);
-  const [editDate, setEditDate] = useState<string | null>(null);
+  const [createDate, setCreateDate] = useState<string | null>(null); // For creating new entries
+  const [editDate, setEditDate] = useState<string | null>(null); // For editing existing entries
   const [selectedPhoto, setSelectedPhoto] = useState<string | null>(null);
 
   const entries = useStore((state) => state.entries);
@@ -59,13 +59,13 @@ export function Home() {
       });
   }, [entries, searchQuery, searchResults, todayDate]);
 
-  if (showForm || editDate) {
+  if (createDate || editDate) {
     return (
       <EntryForm
-        date={editDate || todayDate}
+        date={createDate || editDate || todayDate}
         isEdit={!!editDate}
         onClose={() => {
-          setShowForm(false);
+          setCreateDate(null);
           setEditDate(null);
         }}
       />
@@ -90,7 +90,7 @@ export function Home() {
             </div>
             <h2 className={styles.emptyTitle}>Start your first entry</h2>
             <p className={styles.emptyText}>Begin your journey of capturing daily moments</p>
-            <button className="btn-primary" onClick={() => setShowForm(true)}>
+            <button className="btn-primary" onClick={() => setCreateDate(todayDate)}>
               Create Entry
             </button>
           </div>
@@ -111,7 +111,7 @@ export function Home() {
                   key={item.date}
                   date={item.date}
                   isToday={item.date === todayDate}
-                  onClick={() => setEditDate(item.date)}
+                  onClick={() => setCreateDate(item.date)}
                 />
               )
             )}
