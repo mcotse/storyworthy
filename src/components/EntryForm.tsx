@@ -13,6 +13,9 @@ interface EntryFormProps {
   isEdit?: boolean;
 }
 
+const SWIPE_EDGE_WIDTH = 30; // Pixels from left edge to start swipe
+const SWIPE_THRESHOLD = 100; // Min distance to trigger close
+
 export function EntryForm({ date = getTodayDateString(), onClose, isEdit = false }: EntryFormProps) {
   const [isClosing, setIsClosing] = useState(false);
   const [storyworthy, setStoryworthy] = useState('');
@@ -22,6 +25,7 @@ export function EntryForm({ date = getTodayDateString(), onClose, isEdit = false
   const [error, setError] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [swipeX, setSwipeX] = useState(0);
 
   const addEntry = useStore((state) => state.addEntry);
   const updateEntry = useStore((state) => state.updateEntry);
@@ -29,6 +33,8 @@ export function EntryForm({ date = getTodayDateString(), onClose, isEdit = false
 
   const storyworthyRef = useRef<HTMLTextAreaElement>(null);
   const thankfulRef = useRef<HTMLTextAreaElement>(null);
+  const swipeStartX = useRef(0);
+  const isSwiping = useRef(false);
 
   // Auto-resize textarea
   const autoResize = (el: HTMLTextAreaElement) => {
@@ -167,6 +173,41 @@ export function EntryForm({ date = getTodayDateString(), onClose, isEdit = false
     }, 120); // Match animation duration
   };
 
+  // Swipe-back gesture handlers
+  const handleTouchStart = useCallback((e: React.TouchEvent) => {
+    const touch = e.touches[0];
+    // Only start swipe if touch begins near left edge
+    if (touch.clientX <= SWIPE_EDGE_WIDTH) {
+      swipeStartX.current = touch.clientX;
+      isSwiping.current = true;
+    }
+  }, []);
+
+  const handleTouchMove = useCallback((e: React.TouchEvent) => {
+    if (!isSwiping.current) return;
+
+    const touch = e.touches[0];
+    const diff = touch.clientX - swipeStartX.current;
+
+    // Only allow swiping right
+    if (diff > 0) {
+      setSwipeX(diff);
+    }
+  }, []);
+
+  const handleTouchEnd = useCallback(() => {
+    if (!isSwiping.current) return;
+    isSwiping.current = false;
+
+    if (swipeX >= SWIPE_THRESHOLD) {
+      // Complete the swipe - close the form
+      handleClose();
+    } else {
+      // Snap back
+      setSwipeX(0);
+    }
+  }, [swipeX]);
+
   if (isLoading) {
     return (
       <div className={styles.container}>
@@ -178,7 +219,17 @@ export function EntryForm({ date = getTodayDateString(), onClose, isEdit = false
   const canSave = storyworthy.trim() || thankful.trim();
 
   return (
-    <div className={`${styles.container} ${isClosing ? styles.closing : styles.opening}`}>
+    <div
+      className={`${styles.container} ${isClosing ? styles.closing : styles.opening}`}
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
+      style={{
+        transform: swipeX > 0 ? `translateX(${swipeX}px)` : undefined,
+        transition: isSwiping.current ? 'none' : 'transform 0.2s ease-out',
+        opacity: swipeX > 0 ? 1 - (swipeX / (SWIPE_THRESHOLD * 3)) : 1
+      }}
+    >
       <header className={styles.header}>
         <button type="button" className={styles.backBtn} onClick={handleClose}>
           <ChevronLeftIcon className={styles.backIcon} />

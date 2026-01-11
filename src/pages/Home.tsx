@@ -1,8 +1,9 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useStore } from '../store';
 import { EmptyCard } from '../components/EntryCard';
 import { PhotoModal } from '../components/PhotoModal';
 import { EntryForm } from '../components/EntryForm';
+import { PullToRefresh } from '../components/PullToRefresh';
 import { getTodayDateString, getAllDatesBetween, formatDateString } from '../utils/date';
 import { PencilIcon, ArrowPathIcon, PencilSquareIcon, CheckCircleIcon } from '@heroicons/react/24/outline';
 import type { Entry } from '../types/entry';
@@ -64,6 +65,13 @@ export function Home() {
     setRandomEntry(newEntry);
   };
 
+  const handleRefresh = useCallback(async () => {
+    await loadEntries();
+    // Also shuffle the random memory on refresh
+    const newEntry = getRandomEntry();
+    setRandomEntry(newEntry);
+  }, [loadEntries, getRandomEntry]);
+
   if (createDate || editDate) {
     return (
       <EntryForm
@@ -79,8 +87,9 @@ export function Home() {
 
   return (
     <div className={styles.container}>
-      <main className={styles.main}>
-        {isLoading ? (
+      <PullToRefresh onRefresh={handleRefresh}>
+        <main className={styles.main}>
+          {isLoading ? (
           <div className={styles.loading}>
             <div className={styles.skeleton} />
             <div className={styles.skeleton} />
@@ -172,7 +181,8 @@ export function Home() {
             )}
           </>
         )}
-      </main>
+        </main>
+      </PullToRefresh>
 
       {selectedPhoto && (
         <PhotoModal photo={selectedPhoto} onClose={() => setSelectedPhoto(null)} />
