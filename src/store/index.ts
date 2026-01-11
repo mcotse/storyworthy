@@ -37,6 +37,7 @@ interface AppState {
   notificationSettings: NotificationSettings;
   onboardingComplete: boolean;
   installPromptDismissedAt: number | null;
+  missedDaysLimit: number;
 
   // Auth & Sync
   user: User | null;
@@ -61,6 +62,7 @@ interface AppState {
   setNotificationSettings: (settings: NotificationSettings) => void;
   setOnboardingComplete: (complete: boolean) => void;
   setInstallPromptDismissed: () => void;
+  setMissedDaysLimit: (days: number) => void;
 
   // Auth actions
   initAuth: () => Promise<void>;
@@ -93,6 +95,7 @@ export const useStore = create<AppState>()(
       },
       onboardingComplete: false,
       installPromptDismissedAt: null,
+      missedDaysLimit: 7,
 
       // Auth & Sync initial state
       user: null,
@@ -252,6 +255,10 @@ export const useStore = create<AppState>()(
         set({ installPromptDismissedAt: Date.now() });
       },
 
+      setMissedDaysLimit: (days: number) => {
+        set({ missedDaysLimit: days });
+      },
+
       // Auth actions
       initAuth: async () => {
         if (!isSupabaseConfigured()) {
@@ -343,6 +350,7 @@ export const useStore = create<AppState>()(
         onboardingComplete: state.onboardingComplete,
         randomHistory: state.randomHistory,
         installPromptDismissedAt: state.installPromptDismissedAt,
+        missedDaysLimit: state.missedDaysLimit,
       }),
     }
   )

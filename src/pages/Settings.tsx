@@ -40,6 +40,8 @@ export function Settings() {
 
   const notificationSettings = useStore((state) => state.notificationSettings);
   const setNotificationSettings = useStore((state) => state.setNotificationSettings);
+  const missedDaysLimit = useStore((state) => state.missedDaysLimit);
+  const setMissedDaysLimit = useStore((state) => state.setMissedDaysLimit);
   const addToast = useStore((state) => state.addToast);
   const loadEntries = useStore((state) => state.loadEntries);
 
@@ -277,6 +279,27 @@ export function Settings() {
               </p>
             </>
           )}
+        </section>
+
+        {/* Home Settings Section */}
+        <section className={styles.section}>
+          <h2 className={styles.sectionTitle}>Home</h2>
+          <div className={styles.settingRow}>
+            <div className={styles.settingInfo}>
+              <span className={styles.settingLabel}>Missed Days to Show</span>
+              <span className={styles.settingDesc}>How many days back to show incomplete entries</span>
+            </div>
+            <select
+              className={styles.selectInput}
+              value={missedDaysLimit}
+              onChange={(e) => setMissedDaysLimit(Number(e.target.value))}
+            >
+              <option value={3}>3 days</option>
+              <option value={7}>7 days</option>
+              <option value={14}>14 days</option>
+              <option value={30}>30 days</option>
+            </select>
+          </div>
         </section>
 
         {/* Cloud Sync Section */}

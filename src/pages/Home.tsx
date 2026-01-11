@@ -18,6 +18,7 @@ export function Home() {
   const loadEntries = useStore((state) => state.loadEntries);
   const isLoading = useStore((state) => state.isLoading);
   const getRandomEntry = useStore((state) => state.getRandomEntry);
+  const missedDaysLimit = useStore((state) => state.missedDaysLimit);
 
   useEffect(() => {
     loadEntries();
@@ -37,18 +38,17 @@ export function Home() {
     }
   }, [completedEntries.length, getRandomEntry]);
 
-  // Generate a list of ONLY missing/empty entries
+  // Generate a list of ONLY missing/empty entries from the configured time period
   const missingDates = useMemo(() => {
     const entryMap = new Map(entries.map((e) => [e.date, e]));
-    const oldestEntry = entries.length > 0 ? entries[entries.length - 1] : null;
 
-    if (!oldestEntry) {
-      // No entries yet, show today as empty
-      return [todayDate];
-    }
+    // Calculate start date based on missedDaysLimit setting
+    const startDateObj = new Date();
+    startDateObj.setDate(startDateObj.getDate() - (missedDaysLimit - 1)); // Include today
+    const startDate = startDateObj.toISOString().split('T')[0];
 
-    // Get all dates from oldest entry to today
-    const allDates = getAllDatesBetween(oldestEntry.date, todayDate);
+    // Get all dates from start date to today
+    const allDates = getAllDatesBetween(startDate, todayDate);
 
     // Filter to ONLY empty dates
     return allDates
@@ -57,7 +57,7 @@ export function Home() {
         return !entry || (!entry.storyworthy && !entry.thankful);
       })
       .sort((a, b) => b.localeCompare(a)); // Newest first
-  }, [entries, todayDate]);
+  }, [entries, todayDate, missedDaysLimit]);
 
   const handleShuffle = () => {
     const newEntry = getRandomEntry();
