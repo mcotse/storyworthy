@@ -9,7 +9,7 @@
 .main {
   flex: 1;
   padding: var(--spacing-lg);
-  padding-top: 60px; /* Account for floating search button */
+  padding-top: var(--spacing-sm);
 }
 
 .list {
