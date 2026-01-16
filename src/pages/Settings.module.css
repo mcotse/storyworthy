@@ -93,6 +93,7 @@
   display: inline-block;
   width: 48px;
   height: 28px;
+  flex-shrink: 0;
 }
 
 .toggle input {
@@ -343,6 +344,21 @@
 
 .syncStatus .syncing {
   color: var(--color-primary-dark);
+}
+
+.syncProgressBar {
+  height: 6px;
+  background-color: var(--color-background);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+  margin-top: var(--spacing-sm);
+}
+
+.syncProgressFill {
+  height: 100%;
+  background-color: var(--color-primary);
+  border-radius: var(--radius-full);
+  transition: width 0.2s ease-out;
 }
 
 .syncDesc {

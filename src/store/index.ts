@@ -15,6 +15,12 @@ interface Toast {
   type: 'success' | 'error' | 'info';
 }
 
+interface SyncProgress {
+  phase: 'pulling' | 'pushing';
+  current: number;
+  total: number;
+}
+
 interface AppState {
   // Entries
   entries: Entry[];
@@ -47,6 +53,7 @@ interface AppState {
   user: User | null;
   authLoading: boolean;
   isSyncing: boolean;
+  syncProgress: SyncProgress | null;
   lastSyncTime: number | null;
   isOnline: boolean;
 
@@ -109,6 +116,7 @@ export const useStore = create<AppState>()(
       user: null,
       authLoading: true,
       isSyncing: false,
+      syncProgress: null,
       lastSyncTime: sync.getLastSyncTime(),
       isOnline: navigator.onLine,
 
@@ -324,11 +332,13 @@ export const useStore = create<AppState>()(
           return;
         }
 
-        set({ isSyncing: true });
+        set({ isSyncing: true, syncProgress: null });
 
         try {
-          const result = await sync.syncAll();
-          set({ lastSyncTime: Date.now() });
+          const result = await sync.syncAll((progress) => {
+            set({ syncProgress: progress });
+          });
+          set({ lastSyncTime: Date.now(), syncProgress: null });
 
           // Reload entries after sync
           const entries = await db.getAllEntries();
@@ -347,7 +357,7 @@ export const useStore = create<AppState>()(
         } catch (error) {
           get().addToast('Sync failed', 'error');
         } finally {
-          set({ isSyncing: false });
+          set({ isSyncing: false, syncProgress: null });
         }
       },
 

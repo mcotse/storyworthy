@@ -185,8 +185,17 @@ export async function pullEntries(since?: number): Promise<Entry[]> {
   }
 }
 
+// Progress callback type
+export type SyncProgressCallback = (progress: {
+  phase: 'pulling' | 'pushing';
+  current: number;
+  total: number;
+}) => void;
+
 // Full bidirectional sync
-export async function syncAll(): Promise<{ pushed: number; pulled: number; errors: number }> {
+export async function syncAll(
+  onProgress?: SyncProgressCallback
+): Promise<{ pushed: number; pulled: number; errors: number }> {
   if (!isSupabaseConfigured()) {
     return { pushed: 0, pulled: 0, errors: 0 };
   }
@@ -206,7 +215,10 @@ export async function syncAll(): Promise<{ pushed: number; pulled: number; error
     // Pull remote changes
     const remoteEntries = await pullEntries(lastSync);
 
-    for (const remote of remoteEntries) {
+    for (let i = 0; i < remoteEntries.length; i++) {
+      const remote = remoteEntries[i];
+      onProgress?.({ phase: 'pulling', current: i + 1, total: remoteEntries.length });
+
       const local = await getEntry(remote.date);
 
       if (!local) {
@@ -233,7 +245,10 @@ export async function syncAll(): Promise<{ pushed: number; pulled: number; error
     const localEntries = await getAllEntries();
     const pendingEntries = localEntries.filter((e) => e.pendingSync || !e.cloudId);
 
-    for (const entry of pendingEntries) {
+    for (let i = 0; i < pendingEntries.length; i++) {
+      const entry = pendingEntries[i];
+      onProgress?.({ phase: 'pushing', current: i + 1, total: pendingEntries.length });
+
       const { success } = await pushEntry(entry);
       if (success) {
         result.pushed++;
