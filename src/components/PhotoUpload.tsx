@@ -1,18 +1,61 @@
 import { useRef, useState } from 'react';
 import { compressAndCreateThumbnail } from '../services/compression';
+import { savePhotoToDevice } from '../services/photoSave';
+import { useStore } from '../store';
 import { XMarkIcon, PhotoIcon } from '@heroicons/react/24/outline';
 import styles from './PhotoUpload.module.css';
 
 interface PhotoUploadProps {
   photo?: string;
   thumbnail?: string;
+  date?: string;
   onPhotoChange: (photo: string | undefined, thumbnail: string | undefined) => void;
 }
 
-export function PhotoUpload({ photo, thumbnail, onPhotoChange }: PhotoUploadProps) {
+export function PhotoUpload({ photo, thumbnail, date, onPhotoChange }: PhotoUploadProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showPrompt, setShowPrompt] = useState(false);
+  const [pendingFile, setPendingFile] = useState<File | null>(null);
+
+  const savePhotosToDevice = useStore((state) => state.savePhotosToDevice);
+  const savePhotosPromptShown = useStore((state) => state.savePhotosPromptShown);
+  const setSavePhotosToDevice = useStore((state) => state.setSavePhotosToDevice);
+  const setSavePhotosPromptShown = useStore((state) => state.setSavePhotosPromptShown);
+  const addToast = useStore((state) => state.addToast);
+
+  const processPhoto = async (file: File, shouldSaveToDevice: boolean) => {
+    setIsProcessing(true);
+    setError(null);
+
+    try {
+      // Save original to device if enabled
+      if (shouldSaveToDevice) {
+        const result = await savePhotoToDevice(file, date);
+        if (result.success) {
+          if (result.method === 'download') {
+            addToast('Photo saved to downloads', 'success');
+          }
+          // For share method, the system handles the feedback
+        } else if (result.error !== 'Cancelled') {
+          addToast('Could not save photo to device', 'error');
+        }
+      }
+
+      // Compress and create thumbnail for app storage
+      const { photo, thumbnail } = await compressAndCreateThumbnail(file);
+      onPhotoChange(photo, thumbnail);
+    } catch (err) {
+      setError('Failed to process image. Try a different one.');
+      console.error(err);
+    } finally {
+      setIsProcessing(false);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+    }
+  };
 
   const handleFileSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -24,21 +67,25 @@ export function PhotoUpload({ photo, thumbnail, onPhotoChange }: PhotoUploadProp
       return;
     }
 
-    setIsProcessing(true);
-    setError(null);
+    // If prompt hasn't been shown yet, show it
+    if (!savePhotosPromptShown) {
+      setPendingFile(file);
+      setShowPrompt(true);
+      return;
+    }
 
-    try {
-      const { photo, thumbnail } = await compressAndCreateThumbnail(file);
-      onPhotoChange(photo, thumbnail);
-    } catch (err) {
-      setError('Failed to process image. Try a different one.');
-      console.error(err);
-    } finally {
-      setIsProcessing(false);
-      // Reset input
-      if (fileInputRef.current) {
-        fileInputRef.current.value = '';
-      }
+    // Otherwise, process with current setting
+    await processPhoto(file, savePhotosToDevice);
+  };
+
+  const handlePromptResponse = async (enableSave: boolean) => {
+    setSavePhotosToDevice(enableSave);
+    setSavePhotosPromptShown(true);
+    setShowPrompt(false);
+
+    if (pendingFile) {
+      await processPhoto(pendingFile, enableSave);
+      setPendingFile(null);
     }
   };
 
@@ -57,6 +104,7 @@ export function PhotoUpload({ photo, thumbnail, onPhotoChange }: PhotoUploadProp
         ref={fileInputRef}
         type="file"
         accept="image/*"
+        capture="environment"
         onChange={handleFileSelect}
         className={styles.input}
         aria-label="Upload photo"
@@ -95,6 +143,33 @@ export function PhotoUpload({ photo, thumbnail, onPhotoChange }: PhotoUploadProp
       )}
 
       {error && <p className={styles.error}>{error}</p>}
+
+      {/* First-time prompt modal */}
+      {showPrompt && (
+        <div className={styles.promptOverlay} onClick={() => setShowPrompt(false)}>
+          <div className={styles.promptModal} onClick={(e) => e.stopPropagation()}>
+            <h3 className={styles.promptTitle}>Save Photos to Device?</h3>
+            <p className={styles.promptText}>
+              Would you like to also save photos to your device's gallery?
+              This keeps a backup of your original photos outside the app.
+            </p>
+            <div className={styles.promptButtons}>
+              <button
+                className="btn-primary"
+                onClick={() => handlePromptResponse(true)}
+              >
+                Yes, Save to Device
+              </button>
+              <button
+                className="btn-secondary"
+                onClick={() => handlePromptResponse(false)}
+              >
+                No, Keep in App Only
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

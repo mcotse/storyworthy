@@ -40,6 +40,8 @@ interface AppState {
   onboardingComplete: boolean;
   installPromptDismissedAt: number | null;
   missedDaysLimit: number;
+  savePhotosToDevice: boolean;
+  savePhotosPromptShown: boolean;
 
   // Auth & Sync
   user: User | null;
@@ -65,6 +67,8 @@ interface AppState {
   setOnboardingComplete: (complete: boolean) => void;
   setInstallPromptDismissed: () => void;
   setMissedDaysLimit: (days: number) => void;
+  setSavePhotosToDevice: (enabled: boolean) => void;
+  setSavePhotosPromptShown: (shown: boolean) => void;
 
   // Auth actions
   initAuth: () => Promise<void>;
@@ -98,6 +102,8 @@ export const useStore = create<AppState>()(
       onboardingComplete: false,
       installPromptDismissedAt: null,
       missedDaysLimit: 7,
+      savePhotosToDevice: false,
+      savePhotosPromptShown: false,
 
       // Auth & Sync initial state
       user: null,
@@ -261,6 +267,14 @@ export const useStore = create<AppState>()(
         set({ missedDaysLimit: days });
       },
 
+      setSavePhotosToDevice: (enabled: boolean) => {
+        set({ savePhotosToDevice: enabled });
+      },
+
+      setSavePhotosPromptShown: (shown: boolean) => {
+        set({ savePhotosPromptShown: shown });
+      },
+
       // Auth actions
       initAuth: async () => {
         if (!isSupabaseConfigured()) {
@@ -353,6 +367,8 @@ export const useStore = create<AppState>()(
         randomHistory: state.randomHistory,
         installPromptDismissedAt: state.installPromptDismissedAt,
         missedDaysLimit: state.missedDaysLimit,
+        savePhotosToDevice: state.savePhotosToDevice,
+        savePhotosPromptShown: state.savePhotosPromptShown,
       }),
     }
   )

@@ -43,6 +43,8 @@ export function Settings() {
   const setNotificationSettings = useStore((state) => state.setNotificationSettings);
   const missedDaysLimit = useStore((state) => state.missedDaysLimit);
   const setMissedDaysLimit = useStore((state) => state.setMissedDaysLimit);
+  const savePhotosToDevice = useStore((state) => state.savePhotosToDevice);
+  const setSavePhotosToDevice = useStore((state) => state.setSavePhotosToDevice);
   const addToast = useStore((state) => state.addToast);
   const loadEntries = useStore((state) => state.loadEntries);
 
@@ -313,6 +315,25 @@ export function Settings() {
               <option value={14}>14 days</option>
               <option value={30}>30 days</option>
             </select>
+          </div>
+        </section>
+
+        {/* Photos Section */}
+        <section className={styles.section}>
+          <h2 className={styles.sectionTitle}>Photos</h2>
+          <div className={styles.settingRow}>
+            <div className={styles.settingInfo}>
+              <span className={styles.settingLabel}>Save to Device</span>
+              <span className={styles.settingDesc}>Also save photos to your device's gallery when adding to entries</span>
+            </div>
+            <label className={styles.toggle}>
+              <input
+                type="checkbox"
+                checked={savePhotosToDevice}
+                onChange={(e) => setSavePhotosToDevice(e.target.checked)}
+              />
+              <span className={styles.slider} />
+            </label>
           </div>
         </section>
 
