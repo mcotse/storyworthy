@@ -52,6 +52,7 @@ export function Settings() {
   const user = useStore((state) => state.user);
   const authLoading = useStore((state) => state.authLoading);
   const isSyncing = useStore((state) => state.isSyncing);
+  const syncProgress = useStore((state) => state.syncProgress);
   const lastSyncTime = useStore((state) => state.lastSyncTime);
   const isOnline = useStore((state) => state.isOnline);
   const signInWithGoogle = useStore((state) => state.signInWithGoogle);
@@ -326,14 +327,16 @@ export function Settings() {
               <span className={styles.settingLabel}>Save to Device</span>
               <span className={styles.settingDesc}>Also save photos to your device's gallery when adding to entries</span>
             </div>
-            <label className={styles.toggle}>
-              <input
-                type="checkbox"
-                checked={savePhotosToDevice}
-                onChange={(e) => setSavePhotosToDevice(e.target.checked)}
-              />
-              <span className={styles.slider} />
-            </label>
+            <div className={styles.settingControls}>
+              <label className={styles.toggle}>
+                <input
+                  type="checkbox"
+                  checked={savePhotosToDevice}
+                  onChange={(e) => setSavePhotosToDevice(e.target.checked)}
+                />
+                <span className={styles.slider} />
+              </label>
+            </div>
           </div>
         </section>
 
@@ -367,7 +370,11 @@ export function Settings() {
                     {!isOnline ? (
                       <span className={styles.offline}>Offline</span>
                     ) : isSyncing ? (
-                      <span className={styles.syncing}>Syncing...</span>
+                      <span className={styles.syncing}>
+                        {syncProgress
+                          ? `${syncProgress.phase === 'pulling' ? 'Downloading' : 'Uploading'} ${syncProgress.current}/${syncProgress.total}...`
+                          : 'Syncing...'}
+                      </span>
                     ) : lastSyncTime ? (
                       <span>Last synced {formatDistanceToNow(lastSyncTime, { addSuffix: true })}</span>
                     ) : (
@@ -375,13 +382,26 @@ export function Settings() {
                     )}
                   </div>
 
+                  {isSyncing && syncProgress && (
+                    <div className={styles.syncProgressBar}>
+                      <div
+                        className={styles.syncProgressFill}
+                        style={{ width: `${(syncProgress.current / syncProgress.total) * 100}%` }}
+                      />
+                    </div>
+                  )}
+
                   <button
                     className="btn-secondary"
                     onClick={() => triggerSync()}
                     disabled={isSyncing || !isOnline}
                     style={{ width: '100%', marginTop: 'var(--spacing-md)' }}
                   >
-                    {isSyncing ? 'Syncing...' : 'Sync Now'}
+                    {isSyncing
+                      ? syncProgress
+                        ? `${syncProgress.phase === 'pulling' ? 'Downloading' : 'Uploading'}...`
+                        : 'Syncing...'
+                      : 'Sync Now'}
                   </button>
                 </div>
 
