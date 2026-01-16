@@ -1,7 +1,7 @@
 {
   "name": "storyworthy",
   "private": true,
-  "version": "1.2.35",
+  "version": "1.2.36",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -23,6 +23,7 @@
     "@tanstack/react-virtual": "^3.13.18",
     "browser-image-compression": "^2.0.2",
     "date-fns": "^4.1.0",
+    "jszip": "^3.10.1",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "vite-plugin-pwa": "^1.2.0",

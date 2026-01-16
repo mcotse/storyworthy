@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useStore } from '../store';
-import { exportData, importData } from '../utils/export';
+import { exportData, exportDataWithPhotos, importDataAuto } from '../utils/export';
 import { getStorageUsage, clearAllData } from '../services/db';
 import {
   requestNotificationPermission,
@@ -31,6 +31,7 @@ export function Settings() {
   const [storageUsed, setStorageUsed] = useState(0);
   const [storageQuota, setStorageQuota] = useState(50 * 1024 * 1024);
   const [isExporting, setIsExporting] = useState(false);
+  const [isExportingWithPhotos, setIsExportingWithPhotos] = useState(false);
   const [isImporting, setIsImporting] = useState(false);
   const [deleteConfirm, setDeleteConfirm] = useState('');
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -100,14 +101,27 @@ export function Settings() {
     }
   };
 
+  const handleExportWithPhotos = async () => {
+    setIsExportingWithPhotos(true);
+    try {
+      await exportDataWithPhotos();
+      addToast('Data exported with photos successfully', 'success');
+    } catch (error) {
+      addToast('Failed to export data with photos', 'error');
+    } finally {
+      setIsExportingWithPhotos(false);
+    }
+  };
+
   const handleImport = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
 
     setIsImporting(true);
     try {
-      const count = await importData(file);
-      addToast(`Imported ${count} new entries`, 'success');
+      const count = await importDataAuto(file);
+      const isZip = file.name.endsWith('.zip');
+      addToast(`Imported ${count} new entries${isZip ? ' with photos' : ''}`, 'success');
       loadEntries();
     } catch (error) {
       addToast('Failed to import data. Check file format.', 'error');
@@ -396,11 +410,18 @@ export function Settings() {
             <button
               className="btn-secondary"
               onClick={handleExport}
-              disabled={isExporting}
+              disabled={isExporting || isExportingWithPhotos}
             >
-              {isExporting ? 'Exporting...' : 'Export All Entries'}
+              {isExporting ? 'Exporting...' : 'Export Entries (JSON)'}
             </button>
-            <p className={styles.note}>Photos are not included in export</p>
+            <button
+              className="btn-secondary"
+              onClick={handleExportWithPhotos}
+              disabled={isExporting || isExportingWithPhotos}
+              style={{ marginTop: 'var(--spacing-sm)' }}
+            >
+              {isExportingWithPhotos ? 'Exporting...' : 'Export with Photos (ZIP)'}
+            </button>
           </div>
 
           <div className={styles.buttonGroup}>
@@ -408,12 +429,13 @@ export function Settings() {
               {isImporting ? 'Importing...' : 'Import from File'}
               <input
                 type="file"
-                accept=".json"
+                accept=".json,.zip"
                 onChange={handleImport}
                 style={{ display: 'none' }}
                 disabled={isImporting}
               />
             </label>
+            <p className={styles.note}>Accepts .json or .zip files</p>
           </div>
         </section>
 

@@ -30,10 +30,12 @@ export interface CloudEntry {
 
 export interface ExportData {
   metadata: {
-    version: "1.0";
+    version: "1.0" | "2.0";
     exportDate: string;
     entryCount: number;
     appName: "Storyworthy" | "Daily Moments";
+    includesPhotos?: boolean;
+    photoCount?: number;
   };
   entries: Omit<Entry, 'photo' | 'thumbnail'>[];
 }
