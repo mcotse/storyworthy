@@ -120,6 +120,24 @@
   margin-bottom: var(--spacing-xl);
 }
 
+/* Today's entry section */
+.todaySection {
+  margin-bottom: var(--spacing-xl);
+}
+
+.todayHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-md);
+}
+
+.todayTitle {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--color-text-muted);
+}
+
 /* Missing entries section */
 .missingSection {
   padding-top: var(--spacing-lg);
