@@ -32,6 +32,11 @@ export function Home() {
     return entries.filter((e) => e.storyworthy || e.thankful);
   }, [entries]);
 
+  // Get today's entry if it exists and has content
+  const todayEntry = useMemo(() => {
+    return entries.find((e) => e.date === todayDate && (e.storyworthy || e.thankful)) || null;
+  }, [entries, todayDate]);
+
   // Auto-refresh random entry on mount and when entries change
   useEffect(() => {
     if (completedEntries.length > 0) {
@@ -148,6 +153,44 @@ export function Home() {
                       alt=""
                       className={styles.randomPhoto}
                       onClick={() => setSelectedPhoto(randomEntry.photo!)}
+                    />
+                  )}
+                </article>
+              </div>
+            )}
+
+            {/* Today's entry section */}
+            {todayEntry && (
+              <div className={styles.todaySection}>
+                <div className={styles.todayHeader}>
+                  <h2 className={styles.todayTitle}>Today</h2>
+                </div>
+                <article className={styles.randomCard}>
+                  <header className={styles.randomCardHeader}>
+                    <h3 className={styles.randomDate}>{formatDateString(todayEntry.date)}</h3>
+                    <button
+                      className={styles.editBtn}
+                      onClick={() => setEditDate(todayEntry.date)}
+                      aria-label="Edit entry"
+                    >
+                      <PencilSquareIcon className={styles.editIcon} />
+                    </button>
+                  </header>
+                  {todayEntry.storyworthy && (
+                    <p className={styles.randomText}>{todayEntry.storyworthy}</p>
+                  )}
+                  {todayEntry.thankful && (
+                    <div className={styles.randomThankful}>
+                      <span className={styles.thankfulLabel}>Thankful for</span>
+                      <p className={styles.randomText}>{todayEntry.thankful}</p>
+                    </div>
+                  )}
+                  {todayEntry.photo && (
+                    <img
+                      src={todayEntry.thumbnail || todayEntry.photo}
+                      alt=""
+                      className={styles.randomPhoto}
+                      onClick={() => setSelectedPhoto(todayEntry.photo!)}
                     />
                   )}
                 </article>
