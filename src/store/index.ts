@@ -144,9 +144,11 @@ export const useStore = create<AppState>()(
           set({ entries });
           get().addToast('Entry saved!', 'success');
 
-          // Trigger sync if online and authenticated
+          // Trigger sync if online and authenticated (fire-and-forget with error handling)
           if (user) {
-            get().triggerSync();
+            get().triggerSync().catch((err) => {
+              console.error('Background sync failed after add:', err);
+            });
           }
         } catch (error) {
           // Pass through the detailed error message
@@ -169,9 +171,11 @@ export const useStore = create<AppState>()(
           set({ entries });
           get().addToast('Entry updated!', 'success');
 
-          // Trigger sync if online and authenticated
+          // Trigger sync if online and authenticated (fire-and-forget with error handling)
           if (user) {
-            get().triggerSync();
+            get().triggerSync().catch((err) => {
+              console.error('Background sync failed after update:', err);
+            });
           }
         } catch (error) {
           // Pass through the detailed error message
@@ -299,9 +303,11 @@ export const useStore = create<AppState>()(
         // Listen for auth changes
         auth.onAuthStateChange((user) => {
           set({ user });
-          // Trigger sync when user signs in
+          // Trigger sync when user signs in (fire-and-forget with error handling)
           if (user) {
-            get().triggerSync();
+            get().triggerSync().catch((err) => {
+              console.error('Background sync failed after auth:', err);
+            });
           }
         });
       },
@@ -363,9 +369,11 @@ export const useStore = create<AppState>()(
 
       setOnline: (online: boolean) => {
         set({ isOnline: online });
-        // Auto-sync when coming back online
+        // Auto-sync when coming back online (fire-and-forget with error handling)
         if (online && get().user) {
-          get().triggerSync();
+          get().triggerSync().catch((err) => {
+            console.error('Background sync failed after coming online:', err);
+          });
         }
       },
     }),

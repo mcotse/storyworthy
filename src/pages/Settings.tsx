@@ -357,7 +357,7 @@ export function Settings() {
                 <div className={styles.userInfo}>
                   <div className={styles.userAvatar}>
                     {user.user_metadata?.avatar_url ? (
-                      <img src={user.user_metadata.avatar_url} alt="" />
+                      <img src={user.user_metadata.avatar_url} alt="User avatar" />
                     ) : (
                       <span>{user.email?.[0].toUpperCase()}</span>
                     )}
