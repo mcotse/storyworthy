@@ -66,9 +66,16 @@ function App() {
 
   useEffect(() => {
     const init = async () => {
-      await initDB();
-      await loadEntries();
-      await initAuth();
+      try {
+        await initDB();
+        await loadEntries();
+        await initAuth();
+      } catch (error) {
+        console.error('App initialization failed:', error);
+        // Continue loading the app even if initialization fails
+        // The user will see an empty state and can retry
+      }
+
       setIsReady(true);
 
       if (!onboardingComplete) {

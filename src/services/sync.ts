@@ -46,7 +46,12 @@ export async function uploadPhoto(
 
   try {
     // Convert base64 to blob
-    const base64Data = photoBase64.split(',')[1];
+    const parts = photoBase64.split(',');
+    if (parts.length < 2) {
+      console.error('Invalid base64 data format: missing data URL prefix');
+      return null;
+    }
+    const base64Data = parts[1];
     const byteCharacters = atob(base64Data);
     const byteNumbers = new Array(byteCharacters.length);
     for (let i = 0; i < byteCharacters.length; i++) {
@@ -209,8 +214,13 @@ export async function syncAll(
 
   try {
     // Get last sync timestamp
-    const lastSyncStr = localStorage.getItem(LAST_SYNC_KEY);
-    const lastSync = lastSyncStr ? parseInt(lastSyncStr, 10) : undefined;
+    let lastSync: number | undefined;
+    try {
+      const lastSyncStr = localStorage.getItem(LAST_SYNC_KEY);
+      lastSync = lastSyncStr ? parseInt(lastSyncStr, 10) : undefined;
+    } catch (storageError) {
+      console.warn('Failed to read last sync time from localStorage:', storageError);
+    }
 
     // Pull remote changes
     const remoteEntries = await pullEntries(lastSync);
@@ -258,7 +268,11 @@ export async function syncAll(
     }
 
     // Update last sync timestamp
-    localStorage.setItem(LAST_SYNC_KEY, Date.now().toString());
+    try {
+      localStorage.setItem(LAST_SYNC_KEY, Date.now().toString());
+    } catch (storageError) {
+      console.warn('Failed to save last sync time to localStorage:', storageError);
+    }
 
     return result;
   } catch (error) {
