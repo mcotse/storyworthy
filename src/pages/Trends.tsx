@@ -84,7 +84,7 @@ export function Trends() {
               style={{ width: `${(entries.length / 3) * 100}%` }}
             />
           </div>
-          <p className={styles.progressText}>{entries.length}/3 entries</p>
+          <p className={styles.progressText}><span className="numeric">{entries.length}</span>/3 entries</p>
         </div>
       </div>
     );
@@ -98,15 +98,15 @@ export function Trends() {
           <h2 className={styles.sectionTitle}>Streaks</h2>
           <div className={styles.streakCards}>
             <div className={styles.streakCard}>
-              <span className={styles.streakNumber}>{stats.currentStreak}</span>
+              <span className={`${styles.streakNumber} numeric`}>{stats.currentStreak}</span>
               <span className={styles.streakLabel}>Current Streak</span>
             </div>
             <div className={styles.streakCard}>
-              <span className={styles.streakNumber}>{stats.longestStreak}</span>
+              <span className={`${styles.streakNumber} numeric`}>{stats.longestStreak}</span>
               <span className={styles.streakLabel}>Longest Streak</span>
             </div>
             <div className={styles.streakCard}>
-              <span className={styles.streakNumber}>{stats.totalEntries}</span>
+              <span className={`${styles.streakNumber} numeric`}>{stats.totalEntries}</span>
               <span className={styles.streakLabel}>Total Entries</span>
             </div>
           </div>
@@ -138,7 +138,7 @@ export function Trends() {
                       style={{ width: `${percentage}%` }}
                     />
                   </div>
-                  <span className={styles.timeCount}>{count}</span>
+                  <span className={`${styles.timeCount} numeric`}>{count}</span>
                 </div>
               );
             })}

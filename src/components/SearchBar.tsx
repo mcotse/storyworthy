@@ -51,7 +51,7 @@ export function SearchBar() {
   };
 
   return (
-    <div ref={containerRef} className={styles.container}>
+    <div ref={containerRef} className={styles.container} role="search">
       <div className={styles.searchWrapper}>
         {isExpanded ? (
           <div className={styles.expandedBar}>
@@ -63,6 +63,7 @@ export function SearchBar() {
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Search entries..."
               className={styles.input}
+              aria-label="Search entries"
             />
             {query && (
               <button
@@ -76,12 +77,17 @@ export function SearchBar() {
             <button
               className={styles.cancelBtn}
               onClick={handleCollapse}
+              aria-label="Close search"
             >
               Cancel
             </button>
           </div>
         ) : (
-          <button className={styles.collapsedBar} onClick={handleExpand}>
+          <button
+            className={styles.collapsedBar}
+            onClick={handleExpand}
+            aria-label="Open search"
+          >
             <MagnifyingGlassIcon className={styles.searchIcon} />
             <span className={styles.placeholder}>Search entries...</span>
           </button>
@@ -89,9 +95,9 @@ export function SearchBar() {
       </div>
 
       {searchQuery && isExpanded && (
-        <div className={styles.resultsBar}>
+        <div className={styles.resultsBar} aria-live="polite">
           <span className={styles.resultsText}>
-            {searchResults.length} {searchResults.length === 1 ? 'entry' : 'entries'} found
+            <span className="numeric">{searchResults.length}</span> {searchResults.length === 1 ? 'entry' : 'entries'} found
           </span>
         </div>
       )}

@@ -109,7 +109,7 @@ button {
   cursor: pointer;
   border: none;
   background: none;
-  transition: all var(--transition-fast);
+  transition: background-color var(--transition-fast), transform var(--transition-fast), opacity var(--transition-fast);
 }
 
 button:disabled {
@@ -272,4 +272,32 @@ input::placeholder, textarea::placeholder {
 
 .hide-scrollbar::-webkit-scrollbar {
   display: none;
+}
+
+/* Tabular numbers for numerical data */
+.numeric {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Focus visible - keyboard users only (Vercel guidelines) */
+:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* Remove default focus for mouse/touch users */
+:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* Reduced motion support (Vercel guidelines) */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
