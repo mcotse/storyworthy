@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react';
 import { compressAndCreateThumbnail } from '../services/compression';
-import { savePhotoToDevice } from '../services/photoSave';
+import { savePhotoToDevice, isIOS } from '../services/photoSave';
 import { useStore } from '../store';
 import { XMarkIcon, PhotoIcon } from '@heroicons/react/24/outline';
 import styles from './PhotoUpload.module.css';
@@ -37,10 +37,12 @@ export function PhotoUpload({ photo, thumbnail, date, onPhotoChange }: PhotoUplo
           if (result.method === 'download') {
             addToast('Photo saved to downloads', 'success');
           }
-          // For share method, the system handles the feedback
+          // For share method on iOS, user handled it via the share sheet
         } else if (result.error !== 'Cancelled') {
+          // Don't show error toast if user just cancelled the share sheet
           addToast('Could not save photo to device', 'error');
         }
+        // Note: No message for cancelled - that's intentional user action
       }
 
       // Compress and create thumbnail for app storage
@@ -152,6 +154,10 @@ export function PhotoUpload({ photo, thumbnail, date, onPhotoChange }: PhotoUplo
             <p className={styles.promptText}>
               Would you like to also save photos to your device's gallery?
               This keeps a backup of your original photos outside the app.
+              {isIOS() && ' On iOS, tap "Save Image" when the share menu appears.'}
+            </p>
+            <p className={styles.promptHint}>
+              You can change this later in Settings.
             </p>
             <div className={styles.promptButtons}>
               <button

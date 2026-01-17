@@ -233,11 +233,16 @@
 .modalOverlay {
   position: fixed;
   inset: 0;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: rgba(0, 0, 0, 0.6);
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
   display: flex;
   align-items: center;
   justify-content: center;
   padding: var(--spacing-lg);
+  /* iOS safe areas */
+  padding-top: max(var(--spacing-lg), env(safe-area-inset-top));
+  padding-bottom: max(var(--spacing-lg), env(safe-area-inset-bottom));
   z-index: var(--z-modal);
 }
 
@@ -247,6 +252,8 @@
   padding: var(--spacing-xl);
   max-width: 400px;
   width: 100%;
+  /* Ensure modal is fully opaque */
+  opacity: 1;
 }
 
 .modal h3 {
