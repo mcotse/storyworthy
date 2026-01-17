@@ -263,3 +263,83 @@ vite.config.ts
 vitest.config.ts
 ```
 <!-- END_FILE_TREE -->
+
+---
+
+## Vercel Web Interface Guidelines
+
+This project follows [Vercel's Web Interface Guidelines](https://vercel.com/design/guidelines). Apply these principles when building or modifying UI.
+
+### Interactions
+
+- **Keyboard works everywhere.** All flows are keyboard-operable and follow WAI-ARIA Authoring Patterns.
+- **Clear focus.** Every focusable element shows a visible focus ring. Prefer `:focus-visible` over `:focus`.
+- **Hit targets.** Minimum 24px for desktop, 44px for mobile touch targets.
+- **No dead zones.** If part of a control looks interactive, it should be interactive.
+- **Deep-link everything.** Filters, tabs, pagination—consider URL state for interactive elements.
+- **Forgiving interactions.** Generous hit targets, clear affordances, predictable behavior.
+
+### Animations
+
+- **Prefer CSS over JavaScript** for animations.
+- **Honor `prefers-reduced-motion`.** Disable or reduce animations for users who prefer reduced motion.
+- **GPU-accelerated properties.** Use `transform` and `opacity` for smooth 60fps animations.
+- **Avoid `transition: all`.** Be explicit about which properties transition.
+- **Purposeful motion.** Animations should serve a function, not just decoration.
+
+### Layout
+
+- **Optical alignment.** Sometimes ±1px adjustments are needed when perception beats geometry.
+- **Responsive verification.** Test on mobile, laptop, and ultra-wide screens.
+- **Safe areas.** Respect notches and system UI with `env(safe-area-inset-*)`.
+- **Stable skeletons.** Skeletons mirror final content exactly to avoid layout shift.
+
+### Content & Typography
+
+- **All states designed.** Empty, sparse, dense, and error states.
+- **Typographic quotes.** Prefer curly quotes (" ") over straight quotes (" ").
+- **Tabular numbers.** Use `font-variant-numeric: tabular-nums` for number comparisons.
+- **Resilient to content.** Layouts handle short, average, and very long content.
+
+### Accessibility
+
+- **Redundant status cues.** Don't rely on color alone; include text labels.
+- **Icons have labels.** Convey meaning with text for non-sighted users (aria-label or visible text).
+- **Labels everywhere.** Every control has a label or is associated with one.
+- **Semantic HTML.** Use proper elements (`<button>`, `<label>`, `<nav>`, etc.).
+
+### Forms
+
+- **Enter submits.** When a text input is focused, Enter submits if it's the only control.
+- **Cmd/Ctrl+Enter for textareas.** Multi-line inputs use modifier key to submit.
+- **Error guidance.** Error messages guide toward solutions, not just identify problems.
+
+### Copywriting
+
+- **Active voice.** "Install the CLI" not "The CLI will be installed."
+- **Title Case for headings and buttons** (Chicago style).
+- **Clear and concise.** Use as few words as possible.
+- **Action-oriented.** Lead with verbs.
+
+### CSS Quick Reference
+
+```css
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Focus visible for keyboard users only */
+:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* Tabular numbers for data */
+.numeric {
+  font-variant-numeric: tabular-nums;
+}
+```
