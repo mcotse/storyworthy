@@ -45,6 +45,7 @@ export function Settings() {
   const setMissedDaysLimit = useStore((state) => state.setMissedDaysLimit);
   const savePhotosToDevice = useStore((state) => state.savePhotosToDevice);
   const setSavePhotosToDevice = useStore((state) => state.setSavePhotosToDevice);
+  const setSavePhotosPromptShown = useStore((state) => state.setSavePhotosPromptShown);
   const addToast = useStore((state) => state.addToast);
   const loadEntries = useStore((state) => state.loadEntries);
 
@@ -332,7 +333,11 @@ export function Settings() {
                 <input
                   type="checkbox"
                   checked={savePhotosToDevice}
-                  onChange={(e) => setSavePhotosToDevice(e.target.checked)}
+                  onChange={(e) => {
+                    setSavePhotosToDevice(e.target.checked);
+                    // Mark prompt as shown so it doesn't appear on next photo upload
+                    setSavePhotosPromptShown(true);
+                  }}
                 />
                 <span className={styles.slider} />
               </label>

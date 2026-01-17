@@ -91,21 +91,28 @@
 .promptOverlay {
   position: fixed;
   inset: 0;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: rgba(0, 0, 0, 0.6);
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 1000;
+  z-index: var(--z-modal);
   padding: var(--spacing-lg);
+  /* iOS safe areas */
+  padding-top: max(var(--spacing-lg), env(safe-area-inset-top));
+  padding-bottom: max(var(--spacing-lg), env(safe-area-inset-bottom));
 }
 
 .promptModal {
-  background-color: var(--color-surface);
+  background-color: var(--color-card);
   border-radius: var(--radius-lg);
   padding: var(--spacing-xl);
   max-width: 340px;
   width: 100%;
   box-shadow: var(--shadow-lg);
+  /* Ensure modal is fully opaque */
+  opacity: 1;
 }
 
 .promptTitle {
@@ -118,8 +125,15 @@
 .promptText {
   font-size: 0.9375rem;
   color: var(--color-text-muted);
-  margin-bottom: var(--spacing-lg);
+  margin-bottom: var(--spacing-sm);
   line-height: 1.5;
+}
+
+.promptHint {
+  font-size: 0.8125rem;
+  color: var(--color-text-muted);
+  margin-bottom: var(--spacing-lg);
+  opacity: 0.8;
 }
 
 .promptButtons {
