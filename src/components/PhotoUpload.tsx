@@ -1,8 +1,8 @@
 import { useRef, useState } from 'react';
 import { compressAndCreateThumbnail } from '../services/compression';
-import { savePhotoToDevice, isIOS } from '../services/photoSave';
+import { savePhotoToDevice, isIOS, isMobileDevice } from '../services/photoSave';
 import { useStore } from '../store';
-import { XMarkIcon, PhotoIcon } from '@heroicons/react/24/outline';
+import { XMarkIcon, PhotoIcon, CameraIcon } from '@heroicons/react/24/outline';
 import styles from './PhotoUpload.module.css';
 
 interface PhotoUploadProps {
@@ -13,11 +13,14 @@ interface PhotoUploadProps {
 }
 
 export function PhotoUpload({ photo, thumbnail, date, onPhotoChange }: PhotoUploadProps) {
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const cameraInputRef = useRef<HTMLInputElement>(null);
+  const galleryInputRef = useRef<HTMLInputElement>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showPrompt, setShowPrompt] = useState(false);
+  const [showSourcePicker, setShowSourcePicker] = useState(false);
   const [pendingFile, setPendingFile] = useState<File | null>(null);
+  const [sourceType, setSourceType] = useState<'camera' | 'gallery' | null>(null);
 
   const savePhotosToDevice = useStore((state) => state.savePhotosToDevice);
   const savePhotosPromptShown = useStore((state) => state.savePhotosPromptShown);
@@ -25,13 +28,14 @@ export function PhotoUpload({ photo, thumbnail, date, onPhotoChange }: PhotoUplo
   const setSavePhotosPromptShown = useStore((state) => state.setSavePhotosPromptShown);
   const addToast = useStore((state) => state.addToast);
 
-  const processPhoto = async (file: File, shouldSaveToDevice: boolean) => {
+  const processPhoto = async (file: File, shouldSaveToDevice: boolean, fromCamera: boolean) => {
     setIsProcessing(true);
     setError(null);
 
     try {
-      // Save original to device if enabled
-      if (shouldSaveToDevice) {
+      // Save original to device if enabled AND photo is from camera
+      // (No need to save gallery photos back to gallery)
+      if (shouldSaveToDevice && fromCamera) {
         const result = await savePhotoToDevice(file, date);
         if (result.success) {
           if (result.method === 'download') {
@@ -53,31 +57,41 @@ export function PhotoUpload({ photo, thumbnail, date, onPhotoChange }: PhotoUplo
       console.error(err);
     } finally {
       setIsProcessing(false);
-      if (fileInputRef.current) {
-        fileInputRef.current.value = '';
+      setSourceType(null);
+      // Reset the file inputs
+      if (cameraInputRef.current) {
+        cameraInputRef.current.value = '';
+      }
+      if (galleryInputRef.current) {
+        galleryInputRef.current.value = '';
       }
     }
   };
 
-  const handleFileSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileSelect = async (event: React.ChangeEvent<HTMLInputElement>, fromCamera: boolean) => {
     const file = event.target.files?.[0];
-    if (!file) return;
-
-    // Validate file type
-    if (!file.type.startsWith('image/')) {
-      setError('Please select an image file');
+    if (!file) {
+      setSourceType(null);
       return;
     }
 
-    // If prompt hasn't been shown yet, show it
-    if (!savePhotosPromptShown) {
+    // Validate file type (allow empty type for iOS HEIC)
+    if (file.type && !file.type.startsWith('image/')) {
+      setError('Please select an image file');
+      setSourceType(null);
+      return;
+    }
+
+    // If photo is from camera and save prompt hasn't been shown yet, show it
+    if (fromCamera && !savePhotosPromptShown) {
       setPendingFile(file);
+      setSourceType('camera');
       setShowPrompt(true);
       return;
     }
 
     // Otherwise, process with current setting
-    await processPhoto(file, savePhotosToDevice);
+    await processPhoto(file, savePhotosToDevice, fromCamera);
   };
 
   const handlePromptResponse = async (enableSave: boolean) => {
@@ -86,7 +100,7 @@ export function PhotoUpload({ photo, thumbnail, date, onPhotoChange }: PhotoUplo
     setShowPrompt(false);
 
     if (pendingFile) {
-      await processPhoto(pendingFile, enableSave);
+      await processPhoto(pendingFile, enableSave, sourceType === 'camera');
       setPendingFile(null);
     }
   };
@@ -97,19 +111,46 @@ export function PhotoUpload({ photo, thumbnail, date, onPhotoChange }: PhotoUplo
   };
 
   const handleClick = () => {
-    fileInputRef.current?.click();
+    // On mobile devices, show the source picker
+    if (isMobileDevice()) {
+      setShowSourcePicker(true);
+    } else {
+      // On desktop, just open file picker (no camera)
+      galleryInputRef.current?.click();
+    }
+  };
+
+  const handleSourceSelect = (source: 'camera' | 'gallery') => {
+    setShowSourcePicker(false);
+    setSourceType(source);
+    if (source === 'camera') {
+      cameraInputRef.current?.click();
+    } else {
+      galleryInputRef.current?.click();
+    }
   };
 
   return (
     <div className={styles.container}>
+      {/* Camera input - with capture attribute */}
       <input
-        ref={fileInputRef}
+        ref={cameraInputRef}
         type="file"
         accept="image/*"
         capture="environment"
-        onChange={handleFileSelect}
+        onChange={(e) => handleFileSelect(e, true)}
         className={styles.input}
-        aria-label="Upload photo"
+        aria-label="Take photo with camera"
+      />
+
+      {/* Gallery input - without capture attribute */}
+      <input
+        ref={galleryInputRef}
+        type="file"
+        accept="image/*"
+        onChange={(e) => handleFileSelect(e, false)}
+        className={styles.input}
+        aria-label="Choose photo from gallery"
       />
 
       {photo || thumbnail ? (
@@ -145,6 +186,31 @@ export function PhotoUpload({ photo, thumbnail, date, onPhotoChange }: PhotoUplo
       )}
 
       {error && <p className={styles.error}>{error}</p>}
+
+      {/* Source picker modal (Take Photo / Choose Photo) */}
+      {showSourcePicker && (
+        <div className={styles.promptOverlay} onClick={() => setShowSourcePicker(false)}>
+          <div className={styles.sourcePickerModal} onClick={(e) => e.stopPropagation()}>
+            <button
+              type="button"
+              className={styles.sourceOption}
+              onClick={() => handleSourceSelect('camera')}
+            >
+              <CameraIcon className={styles.sourceIcon} />
+              <span>Take Photo</span>
+            </button>
+            <div className={styles.sourceDivider} />
+            <button
+              type="button"
+              className={styles.sourceOption}
+              onClick={() => handleSourceSelect('gallery')}
+            >
+              <PhotoIcon className={styles.sourceIcon} />
+              <span>Choose Photo</span>
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* First-time prompt modal */}
       {showPrompt && (
