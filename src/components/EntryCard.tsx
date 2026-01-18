@@ -92,15 +92,14 @@ export function EntryCard({ entry, isExpanded, onToggle, onEdit, onPhotoClick }:
 interface EmptyCardProps {
   date: string;
   onClick: () => void;
-  isToday?: boolean;
 }
 
-export function EmptyCard({ date, onClick, isToday = false }: EmptyCardProps) {
+export function EmptyCard({ date, onClick }: EmptyCardProps) {
   return (
     <article className={`${styles.card} ${styles.empty}`} onClick={onClick}>
       <div className={styles.emptyContent}>
         <span className={styles.emptyDate}>{formatDateString(date)}</span>
-        <span className={styles.emptyAction}>{isToday ? 'Write' : 'Add'}</span>
+        <span className={styles.emptyAction}>+ Add</span>
       </div>
     </article>
   );
