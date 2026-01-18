@@ -148,3 +148,46 @@
   border-radius: var(--radius-md);
   font-weight: 500;
 }
+
+/* Source picker modal (Take Photo / Choose Photo) */
+.sourcePickerModal {
+  background-color: var(--color-card);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  min-width: 280px;
+  box-shadow: var(--shadow-lg);
+}
+
+.sourceOption {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  width: 100%;
+  padding: var(--spacing-lg);
+  background: transparent;
+  color: var(--color-text);
+  font-size: 1.0625rem;
+  font-weight: 500;
+  transition: background-color var(--transition-fast);
+  text-align: left;
+}
+
+.sourceOption:hover {
+  background-color: var(--color-background);
+}
+
+.sourceOption:active {
+  background-color: var(--color-border);
+}
+
+.sourceIcon {
+  width: 24px;
+  height: 24px;
+  color: var(--color-text-muted);
+}
+
+.sourceDivider {
+  height: 1px;
+  background-color: var(--color-border);
+  margin: 0 var(--spacing-md);
+}
