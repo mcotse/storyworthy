@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useStore } from '../store';
 import { exportData, exportDataWithPhotos, importDataAuto } from '../utils/export';
-import { getStorageUsage, clearAllData } from '../services/db';
+import { getStorageUsage, clearAllData, createEntry } from '../services/db';
+import { getSampleEntries } from '../utils/sampleData';
 import {
   requestNotificationPermission,
   getNotificationPermission,
@@ -33,6 +34,7 @@ export function Settings() {
   const [isExporting, setIsExporting] = useState(false);
   const [isExportingWithPhotos, setIsExportingWithPhotos] = useState(false);
   const [isImporting, setIsImporting] = useState(false);
+  const [isLoadingSample, setIsLoadingSample] = useState(false);
   const [deleteConfirm, setDeleteConfirm] = useState('');
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [notificationStatus, setNotificationStatus] = useState<NotificationPermission | 'unsupported'>('default');
@@ -148,6 +150,24 @@ export function Settings() {
       setDeleteConfirm('');
     } catch (error) {
       addToast('Failed to delete data', 'error');
+    }
+  };
+
+  const handleLoadSampleData = async () => {
+    setIsLoadingSample(true);
+    try {
+      const sampleEntries = getSampleEntries();
+      let loadedCount = 0;
+      for (const entry of sampleEntries) {
+        await createEntry(entry);
+        loadedCount++;
+      }
+      await loadEntries();
+      addToast(`Loaded ${loadedCount} sample entries`, 'success');
+    } catch (error) {
+      addToast('Failed to load sample data', 'error');
+    } finally {
+      setIsLoadingSample(false);
     }
   };
 
@@ -519,6 +539,17 @@ export function Settings() {
               />
             </label>
             <p className={styles.note}>Accepts .json or .zip files</p>
+          </div>
+
+          <div className={styles.buttonGroup}>
+            <button
+              className="btn-secondary"
+              onClick={handleLoadSampleData}
+              disabled={isLoadingSample}
+            >
+              {isLoadingSample ? 'Loading...' : 'Load Sample Data (30 entries)'}
+            </button>
+            <p className={styles.note}>Load rich sample entries for testing</p>
           </div>
         </section>
 
