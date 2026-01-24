@@ -178,17 +178,17 @@
 
 .entriesInner {
   min-height: 0;
+  overflow: hidden;
+}
+
+/* Timeline container for entries */
+.entriesTimeline {
   display: flex;
   flex-direction: column;
   gap: var(--spacing-md);
-  padding: 0 var(--spacing-md) var(--spacing-md);
-  margin-left: var(--spacing-lg);
+  padding: var(--spacing-md) var(--spacing-xs) var(--spacing-xs) var(--spacing-lg);
+  margin-left: 14px;
   border-left: 2px solid var(--color-border);
-  background-color: var(--color-card);
-  border-bottom-left-radius: var(--radius-lg);
-  border-bottom-right-radius: var(--radius-lg);
-  border: 1px solid var(--color-border);
-  border-top: none;
 }
 
 /* Entry wrapper for staggered animations */
@@ -204,11 +204,6 @@
 .entriesExpanded .entryWrapper {
   opacity: 1;
   transform: translateY(0);
-}
-
-/* First entry gets top padding */
-.entryWrapper:first-child {
-  padding-top: var(--spacing-md);
 }
 
 /* Reduce motion for accessibility */

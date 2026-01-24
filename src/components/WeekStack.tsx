@@ -80,21 +80,23 @@ export function WeekStack({
 
       <div className={`${styles.entriesContainer} ${isExpanded ? styles.entriesExpanded : ''}`}>
         <div className={styles.entriesInner}>
-          {entries.map((entry, index) => (
-            <div
-              key={entry.date}
-              className={styles.entryWrapper}
-              style={{ '--entry-index': index } as React.CSSProperties}
-            >
-              <EntryCard
-                entry={entry}
-                isExpanded={expandedCardDate === entry.date}
-                onToggle={() => onToggleCard(entry.date)}
-                onEdit={() => onEdit(entry.date)}
-                onPhotoClick={onPhotoClick}
-              />
-            </div>
-          ))}
+          <div className={styles.entriesTimeline}>
+            {entries.map((entry, index) => (
+              <div
+                key={entry.date}
+                className={styles.entryWrapper}
+                style={{ '--entry-index': index } as React.CSSProperties}
+              >
+                <EntryCard
+                  entry={entry}
+                  isExpanded={expandedCardDate === entry.date}
+                  onToggle={() => onToggleCard(entry.date)}
+                  onEdit={() => onEdit(entry.date)}
+                  onPhotoClick={onPhotoClick}
+                />
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </div>
