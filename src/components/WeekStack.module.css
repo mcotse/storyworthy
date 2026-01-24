@@ -1,0 +1,97 @@
+.weekStack {
+  margin-bottom: var(--spacing-md);
+}
+
+.weekHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: var(--spacing-md);
+  background-color: var(--color-card);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  border: none;
+  cursor: pointer;
+  transition: background-color var(--transition-fast);
+  text-align: left;
+}
+
+.weekHeader:hover {
+  background-color: var(--color-background);
+}
+
+.weekInfo {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.chevron {
+  display: flex;
+  align-items: center;
+  color: var(--color-text-muted);
+}
+
+.chevronIcon {
+  width: 20px;
+  height: 20px;
+}
+
+.weekLabel {
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.entryCount {
+  font-size: 0.875rem;
+  color: var(--color-text-muted);
+}
+
+.previewPhoto {
+  width: 48px;
+  height: 48px;
+  object-fit: cover;
+  border-radius: var(--radius-md);
+}
+
+.stackPreview {
+  position: relative;
+  width: 48px;
+  height: 48px;
+}
+
+.stackCard {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 48px;
+  height: 40px;
+  background-color: var(--color-background);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+}
+
+.stackCard:nth-child(1) {
+  z-index: 3;
+}
+
+.stackCard:nth-child(2) {
+  z-index: 2;
+  left: 2px;
+}
+
+.stackCard:nth-child(3) {
+  z-index: 1;
+  left: 4px;
+}
+
+.entriesContainer {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+  margin-top: var(--spacing-md);
+  padding-left: var(--spacing-md);
+  border-left: 2px solid var(--color-border);
+  margin-left: var(--spacing-md);
+}
