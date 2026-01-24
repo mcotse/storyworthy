@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import type { User } from '@supabase/supabase-js';
-import type { Entry, NotificationSettings } from '../types/entry';
+import type { Entry, NotificationSettings, Reminder, LegacyNotificationSettings } from '../types/entry';
 import * as db from '../services/db';
 import * as sync from '../services/sync';
 import * as auth from '../services/auth';
@@ -71,6 +71,9 @@ interface AppState {
   addToast: (message: string, type: Toast['type']) => void;
   removeToast: (id: string) => void;
   setNotificationSettings: (settings: NotificationSettings) => void;
+  addReminder: (reminder: Reminder) => void;
+  updateReminder: (id: string, updates: Partial<Reminder>) => void;
+  removeReminder: (id: string) => void;
   setOnboardingComplete: (complete: boolean) => void;
   setInstallPromptDismissed: () => void;
   setMissedDaysLimit: (days: number) => void;
@@ -101,10 +104,10 @@ export const useStore = create<AppState>()(
       expandedCardDate: null,
       toasts: [],
       notificationSettings: {
-        morningEnabled: true,
-        morningTime: '09:00',
-        eveningEnabled: true,
-        eveningTime: '21:00',
+        reminders: [
+          { id: 'morning', time: '09:00', enabled: true, label: 'Morning' },
+          { id: 'evening', time: '21:00', enabled: true, label: 'Evening' },
+        ],
       },
       onboardingComplete: false,
       installPromptDismissedAt: null,
@@ -267,6 +270,42 @@ export const useStore = create<AppState>()(
         set({ notificationSettings: settings });
       },
 
+      addReminder: (reminder) => {
+        const { notificationSettings } = get();
+        if (notificationSettings.reminders.length >= 5) {
+          get().addToast('Maximum of 5 reminders allowed', 'error');
+          return;
+        }
+        set({
+          notificationSettings: {
+            ...notificationSettings,
+            reminders: [...notificationSettings.reminders, reminder],
+          },
+        });
+      },
+
+      updateReminder: (id, updates) => {
+        const { notificationSettings } = get();
+        set({
+          notificationSettings: {
+            ...notificationSettings,
+            reminders: notificationSettings.reminders.map((r) =>
+              r.id === id ? { ...r, ...updates } : r
+            ),
+          },
+        });
+      },
+
+      removeReminder: (id) => {
+        const { notificationSettings } = get();
+        set({
+          notificationSettings: {
+            ...notificationSettings,
+            reminders: notificationSettings.reminders.filter((r) => r.id !== id),
+          },
+        });
+      },
+
       setOnboardingComplete: (complete) => {
         set({ onboardingComplete: complete });
       },
@@ -379,6 +418,7 @@ export const useStore = create<AppState>()(
     }),
     {
       name: 'daily-moments-storage',
+      version: 1,
       partialize: (state) => ({
         notificationSettings: state.notificationSettings,
         onboardingComplete: state.onboardingComplete,
@@ -388,6 +428,36 @@ export const useStore = create<AppState>()(
         savePhotosToDevice: state.savePhotosToDevice,
         savePhotosPromptShown: state.savePhotosPromptShown,
       }),
+      migrate: (persistedState: unknown, version: number) => {
+        const state = persistedState as Record<string, unknown>;
+
+        // Migration from version 0 (no version) to version 1: convert legacy notification settings
+        if (version === 0) {
+          const legacySettings = state.notificationSettings as LegacyNotificationSettings | undefined;
+          if (legacySettings && 'morningEnabled' in legacySettings) {
+            const reminders: Reminder[] = [];
+            if (legacySettings.morningEnabled || legacySettings.morningTime) {
+              reminders.push({
+                id: 'morning',
+                time: legacySettings.morningTime || '09:00',
+                enabled: legacySettings.morningEnabled ?? true,
+                label: 'Morning',
+              });
+            }
+            if (legacySettings.eveningEnabled || legacySettings.eveningTime) {
+              reminders.push({
+                id: 'evening',
+                time: legacySettings.eveningTime || '21:00',
+                enabled: legacySettings.eveningEnabled ?? true,
+                label: 'Evening',
+              });
+            }
+            state.notificationSettings = { reminders };
+          }
+        }
+
+        return state;
+      },
     }
   )
 );

@@ -15,11 +15,23 @@ export function Trends() {
     const dates = entries.map((e) => e.date);
     const { current: currentStreak, longest: longestStreak } = calculateStreak(dates);
 
-    // Time of day analysis
+    // Time of day analysis - only count entries created within 2 days of their date
+    // This excludes bulk-imported entries which all have the same createdAt
     const timeOfDayCounts = { morning: 0, afternoon: 0, evening: 0, night: 0 };
+    let nativeEntryCount = 0;
+
     entries.forEach((entry) => {
-      const timeOfDay = getTimeOfDay(entry.createdAt);
-      timeOfDayCounts[timeOfDay]++;
+      // Parse entry date and createdAt to check if entry was created organically
+      const entryDate = new Date(entry.date);
+      const createdDate = new Date(entry.createdAt);
+      const daysDiff = Math.abs(createdDate.getTime() - entryDate.getTime()) / (1000 * 60 * 60 * 24);
+
+      // Only count entries created within 2 days of their date (not bulk imports)
+      if (daysDiff <= 2) {
+        const timeOfDay = getTimeOfDay(entry.createdAt);
+        timeOfDayCounts[timeOfDay]++;
+        nativeEntryCount++;
+      }
     });
 
     const totalEntries = entries.length;
@@ -63,6 +75,7 @@ export function Trends() {
       longestStreak,
       totalEntries,
       timeOfDayCounts,
+      nativeEntryCount,
       maxTimeOfDay: maxTimeOfDay.key as 'morning' | 'afternoon' | 'evening' | 'night',
       topWords,
       maxWordCount,
@@ -122,31 +135,40 @@ export function Trends() {
           )}
         </section>
 
-        {/* Time of Day Section */}
-        <section className={styles.section}>
-          <h2 className={styles.sectionTitle}>When You Journal</h2>
-          <div className={styles.timeChart}>
-            {(['morning', 'afternoon', 'evening', 'night'] as const).map((time) => {
-              const count = stats.timeOfDayCounts[time];
-              const percentage = (count / stats.totalEntries) * 100;
-              return (
-                <div key={time} className={styles.timeBar}>
-                  <span className={styles.timeLabel}>{time}</span>
-                  <div className={styles.barContainer}>
-                    <div
-                      className={styles.bar}
-                      style={{ width: `${percentage}%` }}
-                    />
+        {/* Time of Day Section - only show if we have native entries */}
+        {stats.nativeEntryCount > 0 && (
+          <section className={styles.section}>
+            <h2 className={styles.sectionTitle}>When You Journal</h2>
+            <div className={styles.timeChart}>
+              {(['morning', 'afternoon', 'evening', 'night'] as const).map((time) => {
+                const count = stats.timeOfDayCounts[time];
+                const percentage = stats.nativeEntryCount > 0
+                  ? (count / stats.nativeEntryCount) * 100
+                  : 0;
+                return (
+                  <div key={time} className={styles.timeBar}>
+                    <span className={styles.timeLabel}>{time}</span>
+                    <div className={styles.barContainer}>
+                      <div
+                        className={styles.bar}
+                        style={{ width: `${percentage}%` }}
+                      />
+                    </div>
+                    <span className={`${styles.timeCount} numeric`}>{count}</span>
                   </div>
-                  <span className={`${styles.timeCount} numeric`}>{count}</span>
-                </div>
-              );
-            })}
-          </div>
-          <p className={styles.insight}>
-            You journal most in the <strong>{stats.maxTimeOfDay}</strong>
-          </p>
-        </section>
+                );
+              })}
+            </div>
+            <p className={styles.insight}>
+              You journal most in the <strong>{stats.maxTimeOfDay}</strong>
+            </p>
+            {stats.nativeEntryCount < stats.totalEntries && (
+              <p className={styles.note}>
+                Based on {stats.nativeEntryCount} of {stats.totalEntries} entries (excludes imported entries)
+              </p>
+            )}
+          </section>
+        )}
 
         {/* Word Cloud Section */}
         <section className={styles.section}>

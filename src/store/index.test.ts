@@ -110,24 +110,41 @@ describe('store', () => {
   })
 
   describe('notificationSettings', () => {
-    it('has default values', () => {
+    it('has default values with reminders array', () => {
       const settings = useStore.getState().notificationSettings
-      expect(settings.morningEnabled).toBe(true)
-      expect(settings.morningTime).toBe('09:00')
-      expect(settings.eveningEnabled).toBe(true)
-      expect(settings.eveningTime).toBe('21:00')
+      expect(settings.reminders).toBeDefined()
+      expect(Array.isArray(settings.reminders)).toBe(true)
+      expect(settings.reminders.length).toBe(2)
+      expect(settings.reminders[0].time).toBe('09:00')
+      expect(settings.reminders[1].time).toBe('21:00')
     })
 
-    it('can be updated', () => {
-      useStore.getState().setNotificationSettings({
-        morningEnabled: false,
-        morningTime: '08:00',
-        eveningEnabled: true,
-        eveningTime: '22:00',
+    it('can add a reminder', () => {
+      const initialCount = useStore.getState().notificationSettings.reminders.length
+      useStore.getState().addReminder({
+        id: 'test-reminder',
+        time: '12:00',
+        enabled: true,
+        label: 'Test',
       })
       const settings = useStore.getState().notificationSettings
-      expect(settings.morningEnabled).toBe(false)
-      expect(settings.morningTime).toBe('08:00')
+      expect(settings.reminders.length).toBe(initialCount + 1)
+      expect(settings.reminders.find(r => r.id === 'test-reminder')).toBeDefined()
+    })
+
+    it('can update a reminder', () => {
+      useStore.getState().updateReminder('morning', { time: '08:00' })
+      const settings = useStore.getState().notificationSettings
+      const morning = settings.reminders.find(r => r.id === 'morning')
+      expect(morning?.time).toBe('08:00')
+    })
+
+    it('can remove a reminder', () => {
+      const initialCount = useStore.getState().notificationSettings.reminders.length
+      useStore.getState().removeReminder('evening')
+      const settings = useStore.getState().notificationSettings
+      expect(settings.reminders.length).toBe(initialCount - 1)
+      expect(settings.reminders.find(r => r.id === 'evening')).toBeUndefined()
     })
   })
 

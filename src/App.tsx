@@ -83,12 +83,7 @@ function App() {
       }
 
       // Schedule notifications
-      scheduleNotifications(
-        notificationSettings.morningTime,
-        notificationSettings.eveningTime,
-        notificationSettings.morningEnabled,
-        notificationSettings.eveningEnabled
-      );
+      scheduleNotifications(notificationSettings.reminders);
     };
 
     init();

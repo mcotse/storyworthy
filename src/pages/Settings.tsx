@@ -40,7 +40,9 @@ export function Settings() {
   const [isInstalled, setIsInstalled] = useState(false);
 
   const notificationSettings = useStore((state) => state.notificationSettings);
-  const setNotificationSettings = useStore((state) => state.setNotificationSettings);
+  const addReminder = useStore((state) => state.addReminder);
+  const updateReminder = useStore((state) => state.updateReminder);
+  const removeReminder = useStore((state) => state.removeReminder);
   const missedDaysLimit = useStore((state) => state.missedDaysLimit);
   const setMissedDaysLimit = useStore((state) => state.setMissedDaysLimit);
   const savePhotosToDevice = useStore((state) => state.savePhotosToDevice);
@@ -149,46 +151,79 @@ export function Settings() {
     }
   };
 
-  const handleNotificationToggle = async (type: 'morning' | 'evening') => {
-    const newSettings = {
-      ...notificationSettings,
-      [type === 'morning' ? 'morningEnabled' : 'eveningEnabled']:
-        !notificationSettings[type === 'morning' ? 'morningEnabled' : 'eveningEnabled'],
-    };
+  const handleReminderToggle = async (id: string) => {
+    const reminder = notificationSettings.reminders.find((r) => r.id === id);
+    if (!reminder) return;
+
+    const newEnabled = !reminder.enabled;
 
     // Request permission if enabling
-    if (newSettings.morningEnabled || newSettings.eveningEnabled) {
-      if (notificationStatus !== 'granted') {
-        const granted = await requestNotificationPermission();
-        if (!granted) {
-          addToast('Please enable notifications in your browser settings', 'info');
-          return;
-        }
-        setNotificationStatus('granted');
+    if (newEnabled && notificationStatus !== 'granted') {
+      const granted = await requestNotificationPermission();
+      if (!granted) {
+        addToast('Please enable notifications in your browser settings', 'info');
+        return;
       }
+      setNotificationStatus('granted');
     }
 
-    setNotificationSettings(newSettings);
-    scheduleNotifications(
-      newSettings.morningTime,
-      newSettings.eveningTime,
-      newSettings.morningEnabled,
-      newSettings.eveningEnabled
+    updateReminder(id, { enabled: newEnabled });
+
+    // Reschedule notifications
+    const updatedReminders = notificationSettings.reminders.map((r) =>
+      r.id === id ? { ...r, enabled: newEnabled } : r
     );
+    scheduleNotifications(updatedReminders);
   };
 
-  const handleTimeChange = (type: 'morning' | 'evening', time: string) => {
-    const newSettings = {
-      ...notificationSettings,
-      [type === 'morning' ? 'morningTime' : 'eveningTime']: time,
-    };
-    setNotificationSettings(newSettings);
-    scheduleNotifications(
-      newSettings.morningTime,
-      newSettings.eveningTime,
-      newSettings.morningEnabled,
-      newSettings.eveningEnabled
+  const handleTimeChange = (id: string, time: string) => {
+    updateReminder(id, { time });
+
+    // Reschedule notifications
+    const updatedReminders = notificationSettings.reminders.map((r) =>
+      r.id === id ? { ...r, time } : r
     );
+    scheduleNotifications(updatedReminders);
+  };
+
+  const handleLabelChange = (id: string, label: string) => {
+    updateReminder(id, { label });
+  };
+
+  const handleAddReminder = async () => {
+    if (notificationSettings.reminders.length >= 5) {
+      addToast('Maximum of 5 reminders allowed', 'error');
+      return;
+    }
+
+    // Request permission if not granted
+    if (notificationStatus !== 'granted') {
+      const granted = await requestNotificationPermission();
+      if (!granted) {
+        addToast('Please enable notifications in your browser settings', 'info');
+        return;
+      }
+      setNotificationStatus('granted');
+    }
+
+    const newReminder = {
+      id: `reminder-${Date.now()}`,
+      time: '12:00',
+      enabled: true,
+      label: '',
+    };
+    addReminder(newReminder);
+
+    // Reschedule notifications
+    scheduleNotifications([...notificationSettings.reminders, newReminder]);
+  };
+
+  const handleRemoveReminder = (id: string) => {
+    removeReminder(id);
+
+    // Reschedule notifications
+    const updatedReminders = notificationSettings.reminders.filter((r) => r.id !== id);
+    scheduleNotifications(updatedReminders);
   };
 
   const storagePercentage = (storageUsed / storageQuota) * 100;
@@ -244,53 +279,55 @@ export function Settings() {
             </>
           ) : (
             <>
-              <div className={styles.settingRow}>
-                <div className={styles.settingInfo}>
-                  <span className={styles.settingLabel}>Morning Reminder</span>
-                  <span className={styles.settingDesc}>Get reminded to journal in the morning</span>
-                </div>
-                <div className={styles.settingControls}>
-                  <input
-                    type="time"
-                    value={notificationSettings.morningTime}
-                    onChange={(e) => handleTimeChange('morning', e.target.value)}
-                    className={styles.timeInput}
-                    disabled={!notificationSettings.morningEnabled}
-                  />
-                  <label className={styles.toggle}>
-                    <input
-                      type="checkbox"
-                      checked={notificationSettings.morningEnabled}
-                      onChange={() => handleNotificationToggle('morning')}
-                    />
-                    <span className={styles.slider} />
-                  </label>
-                </div>
+              <div className={styles.remindersList}>
+                {notificationSettings.reminders.map((reminder) => (
+                  <div key={reminder.id} className={styles.reminderItem}>
+                    <div className={styles.reminderTop}>
+                      <input
+                        type="text"
+                        value={reminder.label || ''}
+                        onChange={(e) => handleLabelChange(reminder.id, e.target.value)}
+                        placeholder="Label (optional)"
+                        className={styles.labelInput}
+                      />
+                      <button
+                        className={styles.removeBtn}
+                        onClick={() => handleRemoveReminder(reminder.id)}
+                        aria-label="Remove reminder"
+                      >
+                        ×
+                      </button>
+                    </div>
+                    <div className={styles.reminderControls}>
+                      <input
+                        type="time"
+                        value={reminder.time}
+                        onChange={(e) => handleTimeChange(reminder.id, e.target.value)}
+                        className={styles.timeInput}
+                        disabled={!reminder.enabled}
+                      />
+                      <label className={styles.toggle}>
+                        <input
+                          type="checkbox"
+                          checked={reminder.enabled}
+                          onChange={() => handleReminderToggle(reminder.id)}
+                        />
+                        <span className={styles.slider} />
+                      </label>
+                    </div>
+                  </div>
+                ))}
               </div>
 
-              <div className={styles.settingRow}>
-                <div className={styles.settingInfo}>
-                  <span className={styles.settingLabel}>Evening Reminder</span>
-                  <span className={styles.settingDesc}>Reflect on your day in the evening</span>
-                </div>
-                <div className={styles.settingControls}>
-                  <input
-                    type="time"
-                    value={notificationSettings.eveningTime}
-                    onChange={(e) => handleTimeChange('evening', e.target.value)}
-                    className={styles.timeInput}
-                    disabled={!notificationSettings.eveningEnabled}
-                  />
-                  <label className={styles.toggle}>
-                    <input
-                      type="checkbox"
-                      checked={notificationSettings.eveningEnabled}
-                      onChange={() => handleNotificationToggle('evening')}
-                    />
-                    <span className={styles.slider} />
-                  </label>
-                </div>
-              </div>
+              {notificationSettings.reminders.length < 5 && (
+                <button
+                  className="btn-secondary"
+                  onClick={handleAddReminder}
+                  style={{ width: '100%', marginTop: 'var(--spacing-md)' }}
+                >
+                  Add Reminder ({notificationSettings.reminders.length}/5)
+                </button>
+              )}
 
               <p className={styles.note}>
                 Note: Reminders only work while the app is open. iOS does not support background notifications for web apps.

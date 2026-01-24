@@ -40,11 +40,23 @@ export interface ExportData {
   entries: Omit<Entry, 'photo' | 'thumbnail'>[];
 }
 
+export interface Reminder {
+  id: string;
+  time: string; // HH:mm format
+  enabled: boolean;
+  label?: string; // Optional custom label
+}
+
 export interface NotificationSettings {
+  reminders: Reminder[];
+}
+
+// Legacy interface for migration
+export interface LegacyNotificationSettings {
   morningEnabled: boolean;
-  morningTime: string; // HH:mm format
+  morningTime: string;
   eveningEnabled: boolean;
-  eveningTime: string; // HH:mm format
+  eveningTime: string;
 }
 
 export interface AppSettings {

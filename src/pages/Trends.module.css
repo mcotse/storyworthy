@@ -125,6 +125,13 @@
   text-align: center;
 }
 
+.note {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+  margin-top: var(--spacing-sm);
+  text-align: center;
+}
+
 /* Word Cloud */
 .wordCloud {
   display: flex;

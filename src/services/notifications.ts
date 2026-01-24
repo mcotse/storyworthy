@@ -1,5 +1,6 @@
 import { getEntry } from './db';
 import { getTodayDateString } from '../utils/date';
+import type { Reminder, NotificationSettings } from '../types/entry';
 
 export async function requestNotificationPermission(): Promise<boolean> {
   if (!('Notification' in window)) {
@@ -43,35 +44,26 @@ export async function showNotification(title: string, body: string): Promise<voi
 }
 
 // Schedule check for notifications
-let morningTimeout: ReturnType<typeof setTimeout> | null = null;
-let eveningTimeout: ReturnType<typeof setTimeout> | null = null;
+const scheduledTimeouts: Map<string, ReturnType<typeof setTimeout>> = new Map();
 
-export function scheduleNotifications(
-  morningTime: string = '09:00',
-  eveningTime: string = '21:00',
-  morningEnabled: boolean = true,
-  eveningEnabled: boolean = true
-): void {
+export function scheduleNotifications(reminders: Reminder[]): void {
   clearScheduledNotifications();
 
-  if (morningEnabled) {
-    morningTimeout = scheduleNotificationAt(
-      morningTime,
-      'Storyworthy',
-      'Take a moment to reflect on today'
-    );
-  }
-
-  if (eveningEnabled) {
-    eveningTimeout = scheduleNotificationAt(
-      eveningTime,
-      'Storyworthy',
-      'How was your day?'
-    );
-  }
+  reminders
+    .filter((r) => r.enabled)
+    .forEach((reminder) => {
+      const timeout = scheduleNotificationAt(
+        reminder.id,
+        reminder.time,
+        'Storyworthy',
+        reminder.label ? `Time for your ${reminder.label.toLowerCase()} reflection` : 'How was your day?'
+      );
+      scheduledTimeouts.set(reminder.id, timeout);
+    });
 }
 
 function scheduleNotificationAt(
+  id: string,
   time: string,
   title: string,
   body: string
@@ -98,19 +90,14 @@ function scheduleNotificationAt(
     }
 
     // Reschedule for next day
-    scheduleNotificationAt(time, title, body);
+    const newTimeout = scheduleNotificationAt(id, time, title, body);
+    scheduledTimeouts.set(id, newTimeout);
   }, delay);
 }
 
 export function clearScheduledNotifications(): void {
-  if (morningTimeout) {
-    clearTimeout(morningTimeout);
-    morningTimeout = null;
-  }
-  if (eveningTimeout) {
-    clearTimeout(eveningTimeout);
-    eveningTimeout = null;
-  }
+  scheduledTimeouts.forEach((timeout) => clearTimeout(timeout));
+  scheduledTimeouts.clear();
 }
 
 // Badge management
@@ -128,13 +115,6 @@ export async function updateBadge(count: number): Promise<void> {
   }
 }
 
-interface NotificationSettings {
-  morningEnabled: boolean;
-  morningTime: string;
-  eveningEnabled: boolean;
-  eveningTime: string;
-}
-
 export async function getIncompleteDaysCount(settings?: NotificationSettings): Promise<number> {
   const todayEntry = await getEntry(getTodayDateString());
   const hasEntry = todayEntry && (todayEntry.storyworthy || todayEntry.thankful);
@@ -144,7 +124,7 @@ export async function getIncompleteDaysCount(settings?: NotificationSettings): P
   }
 
   // If no notification settings provided, don't show badge
-  if (!settings) {
+  if (!settings || !settings.reminders || settings.reminders.length === 0) {
     return 0;
   }
 
@@ -155,18 +135,15 @@ export async function getIncompleteDaysCount(settings?: NotificationSettings): P
   // Get the earliest enabled notification time
   let earliestNotificationMinutes: number | null = null;
 
-  if (settings.morningEnabled) {
-    const [hours, minutes] = settings.morningTime.split(':').map(Number);
-    earliestNotificationMinutes = hours * 60 + minutes;
-  }
-
-  if (settings.eveningEnabled) {
-    const [hours, minutes] = settings.eveningTime.split(':').map(Number);
-    const eveningMinutes = hours * 60 + minutes;
-    if (earliestNotificationMinutes === null || eveningMinutes < earliestNotificationMinutes) {
-      earliestNotificationMinutes = eveningMinutes;
-    }
-  }
+  settings.reminders
+    .filter((r) => r.enabled)
+    .forEach((reminder) => {
+      const [hours, minutes] = reminder.time.split(':').map(Number);
+      const reminderMinutes = hours * 60 + minutes;
+      if (earliestNotificationMinutes === null || reminderMinutes < earliestNotificationMinutes) {
+        earliestNotificationMinutes = reminderMinutes;
+      }
+    });
 
   // If no notifications enabled, don't show badge
   if (earliestNotificationMinutes === null) {

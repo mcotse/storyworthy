@@ -1,13 +1,36 @@
 import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { useStore } from '../store';
 import { EntryCard } from '../components/EntryCard';
+import { WeekStack } from '../components/WeekStack';
 import { PhotoModal } from '../components/PhotoModal';
 import { SearchBar } from '../components/SearchBar';
 import { EntryForm } from '../components/EntryForm';
 import { ClockIcon } from '@heroicons/react/24/outline';
+import { startOfWeek, format } from 'date-fns';
+import type { Entry } from '../types/entry';
 import styles from './History.module.css';
 
 const PAGE_SIZE = 7;
+
+// Helper to get week key for grouping
+function getWeekKey(dateStr: string): string {
+  const date = new Date(dateStr);
+  const weekStart = startOfWeek(date, { weekStartsOn: 0 }); // Sunday start
+  return format(weekStart, 'yyyy-MM-dd');
+}
+
+// Helper to get week label for display
+function getWeekLabel(weekKey: string): string {
+  const weekStart = new Date(weekKey);
+  const weekEnd = new Date(weekStart);
+  weekEnd.setDate(weekEnd.getDate() + 6);
+  return `${format(weekStart, 'MMM d')} - ${format(weekEnd, 'MMM d, yyyy')}`;
+}
+
+// Type for display items (can be entry or week group)
+type DisplayItem =
+  | { type: 'entry'; entry: Entry }
+  | { type: 'week'; weekKey: string; weekLabel: string; entries: Entry[] };
 
 export function History() {
   const [editDate, setEditDate] = useState<string | null>(null);
@@ -33,7 +56,7 @@ export function History() {
   }, [searchQuery]);
 
   // Filter to only completed entries (have storyworthy or thankful content)
-  const allItems = useMemo(() => {
+  const allEntries = useMemo(() => {
     if (searchQuery) {
       return searchResults;
     }
@@ -43,15 +66,50 @@ export function History() {
       .sort((a, b) => b.date.localeCompare(a.date));
   }, [entries, searchQuery, searchResults]);
 
-  // Paginated items (only when not searching)
-  const displayItems = useMemo(() => {
+  // Group entries: recent (within 7 days) shown individually, older grouped by week
+  const displayItems = useMemo((): DisplayItem[] => {
     if (searchQuery) {
-      return allItems; // Show all search results
+      // When searching, show all results individually
+      return allEntries.map((entry) => ({ type: 'entry', entry }));
     }
-    return allItems.slice(0, visibleCount);
-  }, [allItems, visibleCount, searchQuery]);
 
-  const hasMore = !searchQuery && visibleCount < allItems.length;
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const sevenDaysAgo = new Date(today);
+    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+
+    const recentItems: DisplayItem[] = [];
+    const weekGroups = new Map<string, Entry[]>();
+
+    allEntries.slice(0, visibleCount * 2).forEach((entry) => {
+      const entryDate = new Date(entry.date);
+      if (entryDate >= sevenDaysAgo) {
+        // Recent entry - show individually
+        recentItems.push({ type: 'entry', entry });
+      } else {
+        // Older entry - group by week
+        const weekKey = getWeekKey(entry.date);
+        if (!weekGroups.has(weekKey)) {
+          weekGroups.set(weekKey, []);
+        }
+        weekGroups.get(weekKey)!.push(entry);
+      }
+    });
+
+    // Convert week groups to display items, sorted by week (newest first)
+    const weekItems: DisplayItem[] = Array.from(weekGroups.entries())
+      .sort((a, b) => b[0].localeCompare(a[0]))
+      .map(([weekKey, weekEntries]) => ({
+        type: 'week',
+        weekKey,
+        weekLabel: getWeekLabel(weekKey),
+        entries: weekEntries.sort((a, b) => b.date.localeCompare(a.date)),
+      }));
+
+    return [...recentItems, ...weekItems];
+  }, [allEntries, visibleCount, searchQuery]);
+
+  const hasMore = !searchQuery && visibleCount * 2 < allEntries.length;
 
   // Use refs to track current values for the observer callback
   const isLoadingMoreRef = useRef(isLoadingMore);
@@ -130,18 +188,32 @@ export function History() {
         ) : (
           <>
             <div className={styles.list}>
-              {displayItems.map((entry) => (
-                <EntryCard
-                  key={entry.date}
-                  entry={entry}
-                  isExpanded={expandedCardDate === entry.date}
-                  onToggle={() =>
-                    setExpandedCard(expandedCardDate === entry.date ? null : entry.date)
-                  }
-                  onEdit={() => setEditDate(entry.date)}
-                  onPhotoClick={setSelectedPhoto}
-                />
-              ))}
+              {displayItems.map((item) =>
+                item.type === 'entry' ? (
+                  <EntryCard
+                    key={item.entry.date}
+                    entry={item.entry}
+                    isExpanded={expandedCardDate === item.entry.date}
+                    onToggle={() =>
+                      setExpandedCard(expandedCardDate === item.entry.date ? null : item.entry.date)
+                    }
+                    onEdit={() => setEditDate(item.entry.date)}
+                    onPhotoClick={setSelectedPhoto}
+                  />
+                ) : (
+                  <WeekStack
+                    key={item.weekKey}
+                    weekLabel={item.weekLabel}
+                    entries={item.entries}
+                    expandedCardDate={expandedCardDate}
+                    onToggleCard={(date) =>
+                      setExpandedCard(expandedCardDate === date ? null : date)
+                    }
+                    onEdit={setEditDate}
+                    onPhotoClick={setSelectedPhoto}
+                  />
+                )
+              )}
             </div>
 
             {/* Load more trigger */}
@@ -156,7 +228,7 @@ export function History() {
             )}
 
             {/* End of list indicator */}
-            {!hasMore && allItems.length > PAGE_SIZE && (
+            {!hasMore && allEntries.length > PAGE_SIZE && (
               <p className={styles.endOfList}>
                 You've reached the beginning
               </p>
