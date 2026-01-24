@@ -58,6 +58,8 @@
   font-size: 1.125rem;
   font-weight: 600;
   margin-left: 40px;
+  margin-right: 40px;
+  text-align: center;
 }
 
 .deleteBtn {

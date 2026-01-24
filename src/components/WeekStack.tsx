@@ -45,8 +45,8 @@ export function WeekStack({
           </div>
         </div>
 
-        <div className={`${styles.previewContainer} ${isExpanded ? styles.previewHidden : ''}`}>
-          {photoEntries.length > 0 ? (
+        {photoEntries.length > 0 && (
+          <div className={`${styles.previewContainer} ${isExpanded ? styles.previewHidden : ''}`}>
             <div className={styles.photoStack}>
               {photoEntries.map((entry, i) => (
                 <img
@@ -61,21 +61,8 @@ export function WeekStack({
                 />
               ))}
             </div>
-          ) : (
-            <div className={styles.cardStack}>
-              {entries.slice(0, 3).map((_, i) => (
-                <div
-                  key={i}
-                  className={styles.stackCard}
-                  style={{
-                    '--stack-index': i,
-                    zIndex: 3 - i,
-                  } as React.CSSProperties}
-                />
-              ))}
-            </div>
-          )}
-        </div>
+          </div>
+        )}
       </button>
 
       <div className={`${styles.entriesContainer} ${isExpanded ? styles.entriesExpanded : ''}`}>

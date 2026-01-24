@@ -2,7 +2,7 @@ import { useRef, useState } from 'react';
 import { compressAndCreateThumbnail } from '../services/compression';
 import { savePhotoToDevice, isIOS, isMobileDevice } from '../services/photoSave';
 import { useStore } from '../store';
-import { XMarkIcon, PhotoIcon, CameraIcon } from '@heroicons/react/24/outline';
+import { XMarkIcon, PhotoIcon, CameraIcon, PlusIcon } from '@heroicons/react/24/outline';
 import styles from './PhotoUpload.module.css';
 
 interface PhotoUploadProps {
@@ -111,8 +111,12 @@ export function PhotoUpload({ photo, thumbnail, date, onPhotoChange }: PhotoUplo
   };
 
   const handleClick = () => {
-    // On mobile devices, show the source picker
-    if (isMobileDevice()) {
+    // On iOS, skip our custom picker - iOS shows its own native picker
+    // with "Take Photo" and "Choose from Library" options
+    if (isIOS()) {
+      galleryInputRef.current?.click();
+    } else if (isMobileDevice()) {
+      // On Android, show our source picker
       setShowSourcePicker(true);
     } else {
       // On desktop, just open file picker (no camera)
@@ -175,13 +179,13 @@ export function PhotoUpload({ photo, thumbnail, date, onPhotoChange }: PhotoUplo
           className={styles.addBtn}
           onClick={handleClick}
           disabled={isProcessing}
+          aria-label="Add photo"
         >
           {isProcessing ? (
             <span className={styles.spinner} />
           ) : (
-            <PhotoIcon className={styles.addIcon} />
+            <PlusIcon className={styles.addIcon} />
           )}
-          <span>{isProcessing ? 'Processing...' : 'Add Photo'}</span>
         </button>
       )}
 

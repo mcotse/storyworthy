@@ -1,7 +1,7 @@
 {
   "name": "storyworthy",
   "private": true,
-  "version": "1.2.45",
+  "version": "1.2.47",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -21,6 +21,7 @@
     "@heroicons/react": "^2.2.0",
     "@supabase/supabase-js": "^2.90.1",
     "@tanstack/react-virtual": "^3.13.18",
+    "agentation": "^1.3.2",
     "browser-image-compression": "^2.0.2",
     "date-fns": "^4.1.0",
     "jszip": "^3.10.1",

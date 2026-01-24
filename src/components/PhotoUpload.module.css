@@ -9,13 +9,12 @@
 .addBtn {
   display: flex;
   align-items: center;
-  gap: var(--spacing-sm);
-  padding: var(--spacing-md) var(--spacing-lg);
+  justify-content: center;
+  width: 48px;
+  height: 48px;
   border: 2px dashed var(--color-border);
   border-radius: var(--radius-md);
   color: var(--color-text-muted);
-  width: 100%;
-  justify-content: center;
   transition: all var(--transition-fast);
 }
 
