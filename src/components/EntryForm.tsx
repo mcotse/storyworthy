@@ -279,7 +279,6 @@ export function EntryForm({ date = getTodayDateString(), onClose, isEdit = false
         <PhotoUpload
           photo={photo}
           thumbnail={thumbnail}
-          date={date}
           onPhotoChange={handlePhotoChange}
         />
 
