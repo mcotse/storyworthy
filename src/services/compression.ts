@@ -1,19 +1,22 @@
 import imageCompression from 'browser-image-compression';
 
 const COMPRESSION_OPTIONS = {
-  maxSizeMB: 0.5,
+  maxSizeMB: 1,
   maxWidthOrHeight: 1920,
   useWebWorker: true,
   fileType: 'image/jpeg' as const,
-  initialQuality: 0.8,
+  initialQuality: 0.85,
 };
 
+// Thumbnail needs to be large enough for retina displays (2x-3x DPI)
+// Display sizes: EntryCard 60px, PhotoUpload 80px, WeekStack 44px
+// For 3x DPI at 80px display, we need 240px source
 const THUMBNAIL_OPTIONS = {
-  maxSizeMB: 0.01,
-  maxWidthOrHeight: 120,
+  maxSizeMB: 0.05,
+  maxWidthOrHeight: 240,
   useWebWorker: true,
   fileType: 'image/jpeg' as const,
-  initialQuality: 0.7,
+  initialQuality: 0.85,
 };
 
 /**
@@ -136,7 +139,8 @@ async function createThumbnailViaCanvas(file: File): Promise<string> {
     img.onload = () => {
       URL.revokeObjectURL(url);
 
-      const maxSize = 120;
+      // Match THUMBNAIL_OPTIONS.maxWidthOrHeight for retina display support
+      const maxSize = 240;
       let width = img.naturalWidth;
       let height = img.naturalHeight;
 
@@ -163,7 +167,7 @@ async function createThumbnailViaCanvas(file: File): Promise<string> {
       }
 
       ctx.drawImage(img, 0, 0, width, height);
-      resolve(canvas.toDataURL('image/jpeg', 0.7));
+      resolve(canvas.toDataURL('image/jpeg', 0.85));
     };
 
     img.onerror = () => {
