@@ -1,4 +1,7 @@
 import imageCompression from 'browser-image-compression';
+import { logger } from './logger';
+
+const log = logger.child({ service: 'compression' });
 
 const COMPRESSION_OPTIONS = {
   maxSizeMB: 1,
@@ -91,38 +94,55 @@ async function convertViaCanvas(file: File): Promise<File> {
 }
 
 export async function compressImage(file: File): Promise<string> {
+  const fileInfo = { file_name: file.name, file_type: file.type, size_bytes: file.size };
+
   try {
+    log.debug('image_compression_started', fileInfo);
     // Try to convert HEIC/problematic formats first
     const processedFile = await convertToJpegIfNeeded(file);
     const compressedFile = await imageCompression(processedFile, COMPRESSION_OPTIONS);
-    return await fileToBase64(compressedFile);
+    const result = await fileToBase64(compressedFile);
+
+    log.info('image_compressed', {
+      ...fileInfo,
+      compressed_size_bytes: compressedFile.size,
+      compression_ratio: (compressedFile.size / file.size).toFixed(2),
+    });
+    return result;
   } catch (error) {
-    console.error('Image compression failed:', error);
+    log.warn('image_compression_fallback', { ...fileInfo, reason: 'primary_failed' });
     // Try fallback: direct canvas conversion without compression library
     try {
-      console.log('Attempting canvas fallback...');
       const canvasResult = await convertViaCanvas(file);
-      return await fileToBase64(canvasResult);
+      const result = await fileToBase64(canvasResult);
+      log.info('image_compressed', { ...fileInfo, method: 'canvas_fallback' });
+      return result;
     } catch (fallbackError) {
-      console.error('Canvas fallback also failed:', fallbackError);
+      log.error('image_compression_failed', fallbackError, fileInfo);
       throw new Error('Failed to compress image');
     }
   }
 }
 
 export async function createThumbnail(file: File): Promise<string> {
+  const fileInfo = { file_name: file.name, file_type: file.type };
+
   try {
+    log.debug('thumbnail_creation_started', fileInfo);
     const processedFile = await convertToJpegIfNeeded(file);
     const compressedFile = await imageCompression(processedFile, THUMBNAIL_OPTIONS);
-    return await fileToBase64(compressedFile);
+    const result = await fileToBase64(compressedFile);
+    log.info('thumbnail_created', { ...fileInfo, size_bytes: compressedFile.size });
+    return result;
   } catch (error) {
-    console.error('Thumbnail creation failed:', error);
+    log.warn('thumbnail_creation_fallback', { ...fileInfo, reason: 'primary_failed' });
     // Try fallback: create thumbnail via canvas
     try {
-      console.log('Attempting thumbnail canvas fallback...');
-      return await createThumbnailViaCanvas(file);
+      const result = await createThumbnailViaCanvas(file);
+      log.info('thumbnail_created', { ...fileInfo, method: 'canvas_fallback' });
+      return result;
     } catch (fallbackError) {
-      console.error('Thumbnail canvas fallback also failed:', fallbackError);
+      log.error('thumbnail_creation_failed', fallbackError, fileInfo);
       throw new Error('Failed to create thumbnail');
     }
   }

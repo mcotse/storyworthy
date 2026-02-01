@@ -6,6 +6,9 @@ import * as db from '../services/db';
 import * as sync from '../services/sync';
 import * as auth from '../services/auth';
 import { isSupabaseConfigured } from '../services/supabase';
+import { logger } from '../services/logger';
+
+const log = logger.child({ service: 'store' });
 
 export type Tab = 'home' | 'calendar' | 'history' | 'trends' | 'settings';
 
@@ -128,8 +131,10 @@ export const useStore = create<AppState>()(
         set({ isLoading: true, error: null });
         try {
           const entries = await db.getAllEntries();
+          log.info('entries_loaded', { count: entries.length });
           set({ entries, isLoading: false });
         } catch (error) {
+          log.error('entries_load_failed', error);
           set({ error: 'Failed to load entries', isLoading: false });
         }
       },
@@ -150,7 +155,7 @@ export const useStore = create<AppState>()(
           // Trigger sync if online and authenticated (fire-and-forget with error handling)
           if (user) {
             get().triggerSync().catch((err) => {
-              console.error('Background sync failed after add:', err);
+              log.error('background_sync_failed', err, { trigger: 'add_entry' });
             });
           }
         } catch (error) {
@@ -177,7 +182,7 @@ export const useStore = create<AppState>()(
           // Trigger sync if online and authenticated (fire-and-forget with error handling)
           if (user) {
             get().triggerSync().catch((err) => {
-              console.error('Background sync failed after update:', err);
+              log.error('background_sync_failed', err, { trigger: 'update_entry' });
             });
           }
         } catch (error) {
@@ -329,14 +334,17 @@ export const useStore = create<AppState>()(
       // Auth actions
       initAuth: async () => {
         if (!isSupabaseConfigured()) {
+          log.debug('auth_init_skipped', { reason: 'supabase_not_configured' });
           set({ authLoading: false });
           return;
         }
 
+        log.info('auth_init_started');
         set({ authLoading: true });
 
         // Get current user
         const user = await auth.getCurrentUser();
+        log.info('auth_init_completed', { has_user: Boolean(user) });
         set({ user, authLoading: false });
 
         // Listen for auth changes
@@ -345,7 +353,7 @@ export const useStore = create<AppState>()(
           // Trigger sync when user signs in (fire-and-forget with error handling)
           if (user) {
             get().triggerSync().catch((err) => {
-              console.error('Background sync failed after auth:', err);
+              log.error('background_sync_failed', err, { trigger: 'auth_change' });
             });
           }
         });
@@ -407,12 +415,19 @@ export const useStore = create<AppState>()(
       },
 
       setOnline: (online: boolean) => {
+        const wasOffline = !get().isOnline;
         set({ isOnline: online });
-        // Auto-sync when coming back online (fire-and-forget with error handling)
-        if (online && get().user) {
-          get().triggerSync().catch((err) => {
-            console.error('Background sync failed after coming online:', err);
-          });
+
+        if (online && wasOffline) {
+          log.info('network_status_changed', { status: 'online' });
+          // Auto-sync when coming back online (fire-and-forget with error handling)
+          if (get().user) {
+            get().triggerSync().catch((err) => {
+              log.error('background_sync_failed', err, { trigger: 'online' });
+            });
+          }
+        } else if (!online) {
+          log.info('network_status_changed', { status: 'offline' });
         }
       },
     }),

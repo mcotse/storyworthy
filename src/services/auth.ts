@@ -1,5 +1,8 @@
 import type { User, Session } from '@supabase/supabase-js';
 import { supabase, isSupabaseConfigured } from './supabase';
+import { logger } from './logger';
+
+const log = logger.child({ service: 'auth' });
 
 export interface AuthState {
   user: User | null;
@@ -9,8 +12,11 @@ export interface AuthState {
 
 export async function signInWithGoogle(): Promise<{ error: Error | null }> {
   if (!isSupabaseConfigured()) {
+    log.warn('auth_signin_skipped', { reason: 'supabase_not_configured' });
     return { error: new Error('Supabase not configured') };
   }
+
+  log.info('auth_signin_started', { provider: 'google' });
 
   const { error } = await supabase.auth.signInWithOAuth({
     provider: 'google',
@@ -18,6 +24,10 @@ export async function signInWithGoogle(): Promise<{ error: Error | null }> {
       redirectTo: window.location.origin + '/storyworthy/',
     },
   });
+
+  if (error) {
+    log.error('auth_signin_failed', error, { provider: 'google' });
+  }
 
   return { error: error ? new Error(error.message) : null };
 }
@@ -27,7 +37,16 @@ export async function signOut(): Promise<{ error: Error | null }> {
     return { error: new Error('Supabase not configured') };
   }
 
+  log.info('auth_signout_started');
+
   const { error } = await supabase.auth.signOut();
+
+  if (error) {
+    log.error('auth_signout_failed', error);
+  } else {
+    log.info('auth_signout_completed');
+  }
+
   return { error: error ? new Error(error.message) : null };
 }
 
@@ -57,7 +76,12 @@ export function onAuthStateChange(
   }
 
   const { data: { subscription } } = supabase.auth.onAuthStateChange(
-    (_event, session) => {
+    (event, session) => {
+      log.info('auth_state_changed', {
+        event,
+        user_id: session?.user?.id,
+        has_session: Boolean(session),
+      });
       callback(session?.user ?? null, session);
     }
   );
