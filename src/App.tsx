@@ -11,8 +11,11 @@ import { History } from './pages/History';
 import { Settings } from './pages/Settings';
 import { initDB } from './services/db';
 import { scheduleNotifications, updateBadge, getIncompleteDaysCount } from './services/notifications';
+import { logger } from './services/logger';
 import type { Tab } from './store';
 import './styles/transitions.css';
+
+const log = logger.child({ service: 'app' });
 
 const TRANSITION_DURATION = 250; // ms
 
@@ -66,12 +69,23 @@ function App() {
 
   useEffect(() => {
     const init = async () => {
+      const startTime = performance.now();
+      log.info('app_init_started', {
+        user_agent: navigator.userAgent,
+        is_online: navigator.onLine,
+        is_standalone: window.matchMedia('(display-mode: standalone)').matches,
+      });
+
       try {
         await initDB();
         await loadEntries();
         await initAuth();
+
+        const duration_ms = Math.round(performance.now() - startTime);
+        log.info('app_init_completed', { duration_ms });
       } catch (error) {
-        console.error('App initialization failed:', error);
+        const duration_ms = Math.round(performance.now() - startTime);
+        log.error('app_init_failed', error, { duration_ms });
         // Continue loading the app even if initialization fails
         // The user will see an empty state and can retry
       }
@@ -79,6 +93,7 @@ function App() {
       setIsReady(true);
 
       if (!onboardingComplete) {
+        log.info('onboarding_started');
         setShowOnboarding(true);
       }
 

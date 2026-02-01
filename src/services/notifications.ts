@@ -1,22 +1,28 @@
 import { getEntry } from './db';
 import { getTodayDateString } from '../utils/date';
 import type { Reminder, NotificationSettings } from '../types/entry';
+import { logger } from './logger';
+
+const log = logger.child({ service: 'notifications' });
 
 export async function requestNotificationPermission(): Promise<boolean> {
   if (!('Notification' in window)) {
-    console.log('Notifications not supported');
+    log.info('notification_permission_unavailable', { reason: 'api_unsupported' });
     return false;
   }
 
   if (Notification.permission === 'granted') {
+    log.debug('notification_permission_already_granted');
     return true;
   }
 
   if (Notification.permission === 'denied') {
+    log.info('notification_permission_denied');
     return false;
   }
 
   const permission = await Notification.requestPermission();
+  log.info('notification_permission_requested', { result: permission });
   return permission === 'granted';
 }
 
@@ -49,17 +55,22 @@ const scheduledTimeouts: Map<string, ReturnType<typeof setTimeout>> = new Map();
 export function scheduleNotifications(reminders: Reminder[]): void {
   clearScheduledNotifications();
 
-  reminders
-    .filter((r) => r.enabled)
-    .forEach((reminder) => {
-      const timeout = scheduleNotificationAt(
-        reminder.id,
-        reminder.time,
-        'Storyworthy',
-        reminder.label ? `Time for your ${reminder.label.toLowerCase()} reflection` : 'How was your day?'
-      );
-      scheduledTimeouts.set(reminder.id, timeout);
-    });
+  const enabledReminders = reminders.filter((r) => r.enabled);
+  log.info('notifications_scheduled', {
+    total_reminders: reminders.length,
+    enabled_reminders: enabledReminders.length,
+    times: enabledReminders.map((r) => r.time),
+  });
+
+  enabledReminders.forEach((reminder) => {
+    const timeout = scheduleNotificationAt(
+      reminder.id,
+      reminder.time,
+      'Storyworthy',
+      reminder.label ? `Time for your ${reminder.label.toLowerCase()} reflection` : 'How was your day?'
+    );
+    scheduledTimeouts.set(reminder.id, timeout);
+  });
 }
 
 function scheduleNotificationAt(
@@ -80,13 +91,22 @@ function scheduleNotificationAt(
 
   const delay = scheduledTime.getTime() - now.getTime();
 
+  log.debug('notification_timer_set', {
+    reminder_id: id,
+    scheduled_time: scheduledTime.toISOString(),
+    delay_ms: delay,
+  });
+
   return setTimeout(async () => {
     // Check if today's entry exists
     const todayEntry = await getEntry(getTodayDateString());
     const hasEntry = todayEntry && (todayEntry.storyworthy || todayEntry.thankful);
 
     if (!hasEntry) {
+      log.info('notification_triggered', { reminder_id: id, time });
       await showNotification(title, body);
+    } else {
+      log.debug('notification_skipped', { reminder_id: id, reason: 'entry_exists' });
     }
 
     // Reschedule for next day
@@ -106,11 +126,13 @@ export async function updateBadge(count: number): Promise<void> {
     try {
       if (count > 0) {
         await (navigator as Navigator & { setAppBadge: (count: number) => Promise<void> }).setAppBadge(Math.min(count, 9));
+        log.debug('badge_updated', { count });
       } else {
         await (navigator as Navigator & { clearAppBadge: () => Promise<void> }).clearAppBadge();
+        log.debug('badge_cleared');
       }
     } catch (error) {
-      console.error('Badge update failed:', error);
+      log.error('badge_update_failed', error);
     }
   }
 }
