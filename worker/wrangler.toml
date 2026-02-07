@@ -1,0 +1,14 @@
+name = "storyworthy-push"
+main = "src/index.ts"
+compatibility_date = "2024-12-01"
+compatibility_flags = ["nodejs_compat"]
+
+[triggers]
+crons = ["0 14 * * *", "0 23 * * *"]
+
+[[kv_namespaces]]
+binding = "PUSH_KV"
+id = "e33bd07dfbe44f6d80e6f4b1a4d63651"
+
+[vars]
+CORS_ORIGIN = "https://mcotse.github.io"

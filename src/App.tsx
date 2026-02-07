@@ -11,6 +11,7 @@ import { History } from './pages/History';
 import { Settings } from './pages/Settings';
 import { initDB } from './services/db';
 import { scheduleNotifications, updateBadge, getIncompleteDaysCount } from './services/notifications';
+import { isPushSupported, subscribeToPush } from './services/push';
 import { logger } from './services/logger';
 import type { Tab } from './store';
 import './styles/transitions.css';
@@ -99,6 +100,11 @@ function App() {
 
       // Schedule notifications
       scheduleNotifications(notificationSettings.reminders);
+
+      // Re-subscribe to push on every app open (handles iOS silent subscription expiry)
+      if (isPushSupported() && notificationSettings.pushEnabled && Notification.permission === 'granted') {
+        subscribeToPush().catch(() => {});
+      }
     };
 
     init();
