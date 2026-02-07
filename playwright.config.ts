@@ -1,5 +1,7 @@
 import { defineConfig, devices } from '@playwright/test';
 
+const PORT = 5199;
+
 export default defineConfig({
   testDir: './e2e',
   fullyParallel: false,
@@ -9,7 +11,7 @@ export default defineConfig({
   reporter: 'html',
   timeout: 30000,
   use: {
-    baseURL: 'http://localhost:5173/storyworthy/',
+    baseURL: `http://localhost:${PORT}/storyworthy/`,
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
   },
@@ -24,8 +26,8 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: 'bun run dev --port 5173',
-    url: 'http://localhost:5173/storyworthy/',
+    command: `bun run dev --port ${PORT}`,
+    url: `http://localhost:${PORT}/storyworthy/`,
     reuseExistingServer: !process.env.CI,
     timeout: 30000,
     stdout: 'pipe',
