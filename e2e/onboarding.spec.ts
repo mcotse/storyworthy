@@ -23,8 +23,8 @@ test.describe('Onboarding Flow', () => {
     await page.getByRole('button', { name: 'Next' }).click();
     await page.waitForTimeout(300);
 
-    // Go to page 3
-    await page.getByRole('button', { name: 'Next' }).click();
+    // Go to page 3 (notification step has two btn-primary buttons; the action button is last)
+    await page.locator('button.btn-primary').last().click();
     await page.waitForTimeout(300);
 
     // Last page should have a completion button
@@ -33,21 +33,21 @@ test.describe('Onboarding Flow', () => {
 
   test('skip button exits onboarding', async ({ page }) => {
     await page.getByRole('button', { name: 'Skip' }).click();
-    // Should be on home page with search button visible
-    await expect(page.getByRole('button', { name: 'Search entries' })).toBeVisible();
+    // Should be on home page with Create Entry button visible (empty state)
+    await expect(page.getByRole('button', { name: 'Create Entry' })).toBeVisible();
   });
 
   test('onboarding does not show on subsequent visits', async ({ page }) => {
     // Complete onboarding
     await page.getByRole('button', { name: 'Skip' }).click();
-    await expect(page.getByRole('button', { name: 'Search entries' })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Create Entry' })).toBeVisible();
 
     // Reload page
     await page.reload();
     await page.waitForLoadState('networkidle');
 
     // Should still be on home, not onboarding
-    await expect(page.getByRole('button', { name: 'Search entries' })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Create Entry' })).toBeVisible();
     await expect(page.getByText('Welcome to Storyworthy')).not.toBeVisible();
   });
 });

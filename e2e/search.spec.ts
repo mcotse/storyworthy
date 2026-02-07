@@ -12,8 +12,12 @@ test.describe('Search Functionality', () => {
     await page.getByRole('button', { name: 'Save' }).click();
     await page.waitForTimeout(500);
 
-    // Search button should exist
-    const searchButton = page.getByRole('button', { name: 'Search entries' });
+    // Navigate to History page where SearchBar lives
+    await page.getByRole('button', { name: 'History' }).click();
+    await page.waitForTimeout(300);
+
+    // Search button should exist (collapsed state has aria-label "Open search")
+    const searchButton = page.getByRole('button', { name: 'Open search' });
     await expect(searchButton).toBeVisible();
 
     // Click to open search
