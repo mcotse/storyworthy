@@ -13,8 +13,8 @@ test.describe('Missing Day Cards', () => {
     await page.waitForTimeout(500);
 
     // Entry should be visible as a card
-    await expect(page.locator('article')).toBeVisible();
-    await expect(page.getByText('My first entry')).toBeVisible();
+    await expect(page.locator('article').first()).toBeVisible();
+    await expect(page.getByText('My first entry').first()).toBeVisible();
   });
 
   test('empty card for today shows appropriate message', async ({ page }) => {
@@ -28,6 +28,6 @@ test.describe('Missing Day Cards', () => {
     await page.waitForTimeout(500);
 
     // The home screen should show the entry
-    await expect(page.locator('article')).toBeVisible();
+    await expect(page.locator('article').first()).toBeVisible();
   });
 });

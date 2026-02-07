@@ -9,8 +9,8 @@ test.describe('Navigation', () => {
     const nav = page.locator('nav');
     await expect(nav.getByRole('button', { name: 'Home' })).toBeVisible();
     await expect(nav.getByRole('button', { name: 'Calendar' })).toBeVisible();
-    await expect(nav.getByRole('button', { name: 'Analytics' })).toBeVisible();
-    await expect(nav.getByRole('button', { name: 'Random' })).toBeVisible();
+    await expect(nav.getByRole('button', { name: 'History' })).toBeVisible();
+    await expect(nav.getByRole('button', { name: 'Trends' })).toBeVisible();
     await expect(nav.getByRole('button', { name: 'Settings' })).toBeVisible();
   });
 
@@ -23,21 +23,21 @@ test.describe('Navigation', () => {
     await expect(page.locator('text=/January|February|March|April|May|June|July|August|September|October|November|December/')).toBeVisible();
   });
 
-  test('can navigate to Analytics page', async ({ page }) => {
+  test('can navigate to Trends page', async ({ page }) => {
     await page.goto('/');
     await setupFreshApp(page);
 
-    await page.getByRole('button', { name: 'Analytics' }).click();
-    await expect(page.getByRole('heading', { name: 'Analytics' })).toBeVisible();
+    await page.getByRole('button', { name: 'Trends' }).click();
+    await expect(page.getByRole('heading', { name: 'Not enough data yet' })).toBeVisible();
   });
 
-  test('can navigate to Random page', async ({ page }) => {
+  test('can navigate to History page', async ({ page }) => {
     await page.goto('/');
     await setupFreshApp(page);
 
-    await page.getByRole('button', { name: 'Random' }).click();
-    // Random page shows either a memory or empty state
-    await expect(page.locator('main')).toBeVisible();
+    await page.getByRole('button', { name: 'History' }).click();
+    // History page shows either entries or empty state
+    await expect(page.getByText(/No memories yet|entr/i).first()).toBeVisible();
   });
 
   test('can navigate to Settings page', async ({ page }) => {
@@ -58,8 +58,8 @@ test.describe('Navigation', () => {
 
     // Go back to Home
     await page.getByRole('button', { name: 'Home' }).click();
-    // Home page should show search button (no header anymore)
-    await expect(page.getByRole('button', { name: 'Search entries' })).toBeVisible();
+    // Home page should show empty state with Create Entry button
+    await expect(page.getByRole('button', { name: 'Create Entry' })).toBeVisible();
   });
 
   test('active tab is highlighted', async ({ page }) => {

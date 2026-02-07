@@ -333,6 +333,8 @@ export function Settings() {
   return (
     <div className={styles.container}>
       <main className={styles.main}>
+        <h1 className={styles.pageTitle}>Settings</h1>
+
         {/* Notifications Section */}
         <section className={styles.section}>
           <h2 className={styles.sectionTitle}>Notifications</h2>
