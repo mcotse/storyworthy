@@ -8,6 +8,13 @@ import {
   getNotificationPermission,
   scheduleNotifications,
 } from '../services/notifications';
+import {
+  isPushSupported,
+  subscribeToPush,
+  unsubscribeFromPush,
+  sendTestPush,
+  getPushSubscription,
+} from '../services/push';
 import { isSupabaseConfigured } from '../services/supabase';
 import { formatDistanceToNow } from 'date-fns';
 import styles from './Settings.module.css';
@@ -40,8 +47,11 @@ export function Settings() {
   const [notificationStatus, setNotificationStatus] = useState<NotificationPermission | 'unsupported'>('default');
   const [canInstall, setCanInstall] = useState(false);
   const [isInstalled, setIsInstalled] = useState(false);
+  const [pushStatus, setPushStatus] = useState<'loading' | 'active' | 'inactive'>('loading');
+  const [isSendingTest, setIsSendingTest] = useState(false);
 
   const notificationSettings = useStore((state) => state.notificationSettings);
+  const setNotificationSettings = useStore((state) => state.setNotificationSettings);
   const addReminder = useStore((state) => state.addReminder);
   const updateReminder = useStore((state) => state.updateReminder);
   const removeReminder = useStore((state) => state.removeReminder);
@@ -81,6 +91,15 @@ export function Settings() {
 
     // Check if install prompt is available
     setCanInstall(!!deferredPrompt);
+
+    // Check push subscription status
+    if (isPushSupported()) {
+      getPushSubscription().then((sub) => {
+        setPushStatus(sub ? 'active' : 'inactive');
+      });
+    } else {
+      setPushStatus('inactive');
+    }
 
     // Listen for future install prompts
     const handleBeforeInstall = () => setCanInstall(true);
@@ -246,6 +265,49 @@ export function Settings() {
     scheduleNotifications(updatedReminders);
   };
 
+  const handlePushToggle = async () => {
+    if (notificationSettings.pushEnabled) {
+      // Disable push
+      await unsubscribeFromPush();
+      setNotificationSettings({ ...notificationSettings, pushEnabled: false });
+      setPushStatus('inactive');
+      addToast('Push notifications disabled', 'info');
+    } else {
+      // Enable push — request permission first
+      if (Notification.permission !== 'granted') {
+        const granted = await requestNotificationPermission();
+        if (!granted) {
+          addToast('Please enable notifications in your browser settings', 'info');
+          return;
+        }
+        setNotificationStatus('granted');
+      }
+
+      const subscription = await subscribeToPush();
+      if (subscription) {
+        setNotificationSettings({ ...notificationSettings, pushEnabled: true });
+        setPushStatus('active');
+        addToast('Push notifications enabled', 'success');
+      } else {
+        addToast('Failed to enable push notifications', 'error');
+      }
+    }
+  };
+
+  const handleSendTestPush = async () => {
+    setIsSendingTest(true);
+    try {
+      const ok = await sendTestPush();
+      if (ok) {
+        addToast('Test notification sent', 'success');
+      } else {
+        addToast('Failed to send test notification', 'error');
+      }
+    } finally {
+      setIsSendingTest(false);
+    }
+  };
+
   const storagePercentage = (storageUsed / storageQuota) * 100;
 
   const handleInstall = async () => {
@@ -350,11 +412,50 @@ export function Settings() {
               )}
 
               <p className={styles.note}>
-                Note: Reminders only work while the app is open. iOS does not support background notifications for web apps.
+                Note: Reminders only work while the app is open. Enable Push Notifications below for reminders that work even when the app is closed.
               </p>
             </>
           )}
         </section>
+
+        {/* Push Notifications Section */}
+        {isPushSupported() && (
+          <section className={styles.section}>
+            <h2 className={styles.sectionTitle}>Push Notifications</h2>
+            <p className={styles.settingDesc} style={{ marginBottom: 'var(--spacing-md)' }}>
+              Receive reminders even when the app is closed.
+            </p>
+
+            <div className={styles.settingRow}>
+              <div className={styles.settingInfo}>
+                <span className={styles.settingLabel}>Enable Push</span>
+                <span className={styles.settingDesc}>
+                  {pushStatus === 'active' ? 'Active' : 'Not subscribed'}
+                </span>
+              </div>
+              <label className={styles.toggle}>
+                <input
+                  type="checkbox"
+                  checked={!!notificationSettings.pushEnabled}
+                  onChange={handlePushToggle}
+                  disabled={pushStatus === 'loading'}
+                />
+                <span className={styles.slider} />
+              </label>
+            </div>
+
+            {notificationSettings.pushEnabled && pushStatus === 'active' && (
+              <button
+                className="btn-secondary"
+                onClick={handleSendTestPush}
+                disabled={isSendingTest}
+                style={{ width: '100%', marginTop: 'var(--spacing-md)' }}
+              >
+                {isSendingTest ? 'Sending...' : 'Send Test Notification'}
+              </button>
+            )}
+          </section>
+        )}
 
         {/* Home Settings Section */}
         <section className={styles.section}>

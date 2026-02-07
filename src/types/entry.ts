@@ -49,6 +49,7 @@ export interface Reminder {
 
 export interface NotificationSettings {
   reminders: Reminder[];
+  pushEnabled?: boolean;
 }
 
 // Legacy interface for migration
