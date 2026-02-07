@@ -62,6 +62,9 @@ export async function subscribeToPush(): Promise<PushSubscription | null> {
 
     if (!response.ok) {
       log.error('push_subscribe_worker_failed', new Error(`HTTP ${response.status}`));
+      // Worker doesn't know about this subscription, so unsubscribe the browser
+      await subscription.unsubscribe();
+      return null;
     }
 
     return subscription;
